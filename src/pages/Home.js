@@ -67,7 +67,7 @@ const Home = () => {
 							<div className="card-body text-center">
 								<h5><span className="badge badge-secondary">Room</span></h5>
 								<h4 className="card-title text-truncate">{ room.name }</h4>
-								<Link to={ `/${room.id}` } className="btn btn-outline-dark btn-block">Go to room</Link>
+								<Link to={ `room/${room.id}` } className="btn btn-outline-dark btn-block">Go to room</Link>
 							</div>
 						</div>
 					</div>

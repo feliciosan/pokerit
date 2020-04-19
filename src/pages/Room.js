@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom'
 import { Firestore } from '../services/firebase'
 import { AuthContext } from '../contexts/Auth'
 
+import NotFound from './NotFound'
+
 const generateCardNumbers = (card = 0.5, limit = 26) => {
 	const cards = []
 	let interval = 0.5
@@ -181,7 +183,7 @@ const Room = () => {
 	}, [id])
 
 	if (!docExists) {
-		return <h2 className="text-center mt-5">Sorry...</h2>
+		return <NotFound />
 	}
 
 	return (
