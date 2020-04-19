@@ -59,7 +59,7 @@ const Cards = ({ updateCard }) => {
 					<button
 						key={card}
 						onClick={() => updateCard(card)}
-						className="btn btn-outline-danger m-1 pl-4 pr-4 pt-3 pb-3 flex-grow-1">
+						className="btn btn-outline-danger m-1 pl-sm-4 pr-sm-4 pt-sm-3 pb-sm-3 flex-grow-1">
 						<strong>{card}</strong>
 					</button>
 				))}
@@ -71,7 +71,7 @@ const Cards = ({ updateCard }) => {
 
 const Players = ({ room, userId }) => {
 	return (
-		<ul className="list-group">
+		<ul className="list-group mb-4">
 			{Object.keys(room.players).sort().map((key) => (
 				<li key={key} className="list-group-item d-flex justify-content-between align-items-center">
 					{room.players[key].name}
