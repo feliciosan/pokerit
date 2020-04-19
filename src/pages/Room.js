@@ -77,7 +77,14 @@ const Players = ({ room, userId }) => {
 			{Object.keys(room.players).sort().map((key) => (
 				<li key={key} className="list-group-item d-flex justify-content-between align-items-center">
 					{room.players[key].name}
-					<span className={`badge ${(room.show_result || (userId === key) ? 'badge-success' : 'badge-danger')} badge-pill`}>
+					<span className={`badge badge-pill
+						${(room.show_result || (userId === key)) && (room.players[key].card !== 0)
+							? 'badge-success'
+							: (room.players[key].card === 0)
+							? 'badge-warning'
+							: 'badge-danger'
+						}
+					`}>
 						{(room.show_result || (userId === key) ? room.players[key].card : '?')}
 					</span>
 				</li>
@@ -102,6 +109,20 @@ const Room = () => {
 
 		data[currentPlayerCard] = val
 		docRef.update(data)
+	}
+
+	const resetCards = () => {
+		const docRef = Firestore().collection("rooms").doc(id)
+		const playersToUpdate = room.players
+
+		Object.keys(playersToUpdate).forEach((key) => {
+			playersToUpdate[key].card = 0
+		})
+
+		docRef.update({
+			show_result: false,
+			players: playersToUpdate
+		})
 	}
 
 	const generatePlayer = (user, val) => {
@@ -198,23 +219,33 @@ const Room = () => {
 					<hr />
 					<section>
 						{ !userId ? (
-							<FormPlayer submit={ handleEnter }/>
+							<FormPlayer submit={handleEnter}/>
 						) : (
 							<div className="row">
-								<Cards updateCard={ updateCard }/>
+								<Cards updateCard={updateCard}/>
 								<hr />
 								<section className="col-sm-12">
 									<div className="card mb-4">
 										<div className={`card-body ${!currentUser && 'text-center'}`}>
-											<h5 className={`mt-1 ${currentUser && 'float-left'} ${(room.show_result ? 'text-success' : 'text-danger')}`}>Average: {room.show_result ? average.toFixed(2) : '?'}</h5>
-											{ currentUser && (room.user_id === currentUser.uid) && (
-												<button onClick={() => showAllCards(!room.show_result)} className="btn btn-outline-secondary float-right">
-													{!room.show_result ? 'Show result' : 'Hide result'}
-												</button>
+											<h5 className={`mt-1 ${currentUser && 'float-left'} ${(room.show_result ? 'text-success' : 'text-danger')}`}>
+												Average: {room.show_result ? average.toFixed(2) : '?'}
+											</h5>
+											{currentUser && (room.user_id === currentUser.uid) && (
+												<div className="float-right text-right">
+													<button onClick={() => showAllCards(!room.show_result)} className={`btn
+														${!room.show_result
+															? 'btn-success'
+															: 'btn-danger'
+														}
+													`}>
+														{!room.show_result ? 'Show result' : 'Hide result'}
+													</button>
+													<button onClick={resetCards} className="btn btn-warning ml-3">Reset</button>
+												</div>
 											)}
 										</div>
 									</div>
-									<Players room={ room } userId={ userId }/>
+									<Players room={room} userId={userId}/>
 								</section>
 							</div>
 						)}
