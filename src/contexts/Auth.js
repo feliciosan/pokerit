@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
 	if (isPending) {
 		return (
-			<h1>Loading...</h1>
+			<h4 className="text-center mt-5">Loading...</h4>
 		)
 	}
 

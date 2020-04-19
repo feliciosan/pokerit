@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { Firestore } from '../services/firebase'
 import { AuthContext } from '../contexts/Auth'
 
-const generateCardNumbers = (card = 0.5, limit = 28) => {
+const generateCardNumbers = (card = 0.5, limit = 26) => {
 	const cards = []
 	let interval = 0.5
 
@@ -89,6 +89,8 @@ const Room = () => {
 	const { currentUser } = useContext(AuthContext)
 	const [room, setRoom] = useState({ players: {} })
 	const [average, setAverage] = useState(0)
+	const [docExists, setDocExists] = useState(true)
+	const [pageLoading, setPageLoading] = useState(true)
 	const [userId, setUserId] = useState(getLocalStorageUserKey(id))
 
 	const updateCard = (val) => {
@@ -169,39 +171,53 @@ const Room = () => {
 				}
 
 				setRoom(currentRoom)
+				setPageLoading(false)
+				return
 			}
+
+			setDocExists(false)
 		})
 
 	}, [id])
 
+	if (!docExists) {
+		return <h2 className="text-center mt-5">Sorry...</h2>
+	}
+
 	return (
 		<main>
-			<section className="row mt-3">
-				<div className="col-sm-12">
-					<h1>{room.name}</h1>
-				</div>
-			</section>
-			<hr />
-			{ !userId ? (
-				<FormPlayer submit={ handleEnter }/>
-			) : (
-				<div className="row">
-					<Cards updateCard={ updateCard }/>
-					<hr />
-					<section className="col-sm-12">
-						<div className="card mb-4">
-							<div className={`card-body ${!currentUser && 'text-center'}`}>
-								<h5 className={`mt-1 ${currentUser && 'float-left'} ${(room.show_result ? 'text-success' : 'text-danger')}`}>Average: {room.show_result ? average.toFixed(2) : '?'}</h5>
-								{ currentUser && (room.user_id === currentUser.uid) && (
-									<button onClick={() => showAllCards(!room.show_result)} className="btn btn-outline-secondary float-right">
-										{!room.show_result ? 'Show result' : 'Hide result'}
-									</button>
-								)}
-							</div>
+			{ !pageLoading && (
+				<>
+					<section className="row mt-3">
+						<div className="col-sm-12">
+							<h1>{room.name}</h1>
 						</div>
-						<Players room={ room } userId={ userId }/>
 					</section>
-				</div>
+					<hr />
+					<section>
+						{ !userId ? (
+							<FormPlayer submit={ handleEnter }/>
+						) : (
+							<div className="row">
+								<Cards updateCard={ updateCard }/>
+								<hr />
+								<section className="col-sm-12">
+									<div className="card mb-4">
+										<div className={`card-body ${!currentUser && 'text-center'}`}>
+											<h5 className={`mt-1 ${currentUser && 'float-left'} ${(room.show_result ? 'text-success' : 'text-danger')}`}>Average: {room.show_result ? average.toFixed(2) : '?'}</h5>
+											{ currentUser && (room.user_id === currentUser.uid) && (
+												<button onClick={() => showAllCards(!room.show_result)} className="btn btn-outline-secondary float-right">
+													{!room.show_result ? 'Show result' : 'Hide result'}
+												</button>
+											)}
+										</div>
+									</div>
+									<Players room={ room } userId={ userId }/>
+								</section>
+							</div>
+						)}
+					</section>
+				</>
 			)}
 		</main>
 	);
