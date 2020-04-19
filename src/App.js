@@ -12,7 +12,6 @@ import Header from './components/Header'
 import './styles/Base.scss'
 
 const App = () => {
-
 	return (
 		<AuthProvider>
 			<Router>
