@@ -18,7 +18,7 @@ const App = () => {
 				<Header />
 				<div className="container">
           			<PrivateRoute exact path="/" component={Home}/>
-          			<Route path="/rooms/:id" component={Room}/>
+          			<Route path="/:id" component={Room}/>
 					<Route exact path="/login" component={Login}/>
 					<Route exact path="/signup" component={SignUp}/>
 				</div>
