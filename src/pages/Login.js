@@ -1,21 +1,42 @@
 import React, { useContext, useState } from 'react'
-import { withRouter, Redirect, Link } from 'react-router-dom'
+import Button from '@material-ui/core/Button'
+import Container from '@material-ui/core/Container'
+import TextField from '@material-ui/core/TextField'
+import Box from '@material-ui/core/Box'
+import Typography from '@material-ui/core/Typography'
+import Alert from '@material-ui/lab/Alert'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
-import { Auth } from '../services/firebase'
-import { AuthContext } from '../contexts/Auth'
+import {Auth} from '../services/firebase'
+import {AuthContext} from '../contexts/Auth'
+import {makeStyles} from '@material-ui/core/styles'
+import {withRouter, Redirect, Link} from 'react-router-dom'
+
+const useStyles = makeStyles((theme) => ({
+	marginTop: {
+		marginTop: theme.spacing(2)
+	},
+	marginBottom: {
+		marginBottom: theme.spacing(2)
+	}
+}))
 
 const Login = () => {
-	const { currentUser } = useContext(AuthContext)
+	const classes = useStyles()
+	const {currentUser} = useContext(AuthContext)
 	const [error, setError] = useState(null)
+	const [isLoading, setIsLoading] = useState(false)
 
 	const handleLogin = (event) => {
-		event.preventDefault()
-
 		const { email, password } = event.target.elements
+
+		event.preventDefault()
+		setIsLoading(true)
 
 		Auth.signInWithEmailAndPassword(email.value, password.value)
 		.catch((error) => {
 			setError(error.message)
+			setIsLoading(false)
 		})
 	}
 
@@ -24,29 +45,78 @@ const Login = () => {
 	}
 
 	return (
-		<div className="col-sm-6 offset-sm-3 mt-5">
-			<div className="card">
-				<div className="card-body">
-					{ error && (
-						<div className="alert alert-danger">{ error }</div>
+		<>
+			<Box height="4px">
+				{isLoading && (
+					<LinearProgress color="primary" />
+				)}
+			</Box>
+
+			<Container maxWidth="xs">
+				<Box
+					marginTop={5}
+					padding={3}
+					borderRadius={5}
+					border={1}
+					borderColor="grey.300">
+					{error && (
+						<Alert
+							severity="error"
+							className={classes.marginBottom}>
+							{error}
+						</Alert>
 					)}
-					<h1>Login</h1>
-					<hr />
+
+					<Typography
+						variant="h5"
+						color="primary">
+						Login
+					</Typography>
+
 					<form onSubmit={ handleLogin }>
-						<div className="form-group">
-							<label htmlFor="inputEmail">Email address</label>
-							<input name="email" type="email" className="form-control" id="inputEmail" placeholder="Enter email" />
-						</div>
-						<div className="form-group">
-							<label htmlFor="inputPassword">Password</label>
-							<input name="password" type="password" className="form-control" id="inputPassword" placeholder="Password" />
-						</div>
-						<button className="btn btn-block btn-primary">Login</button>
+						<TextField
+							name="email"
+							label="Email"
+							variant="outlined"
+							type="email"
+							className={classes.marginTop}
+							required
+							disabled={isLoading}
+							fullWidth />
+						<TextField
+							name="password"
+							type="password"
+							label="Password"
+							variant="outlined"
+							fullWidth
+							required
+							disabled={isLoading}
+							className={classes.marginTop}/>
+						<Button
+							type="submit"
+							size="large"
+							variant="contained"
+							color="primary"
+							fullWidth
+							required
+							disabled={isLoading}
+							className={classes.marginTop}>
+							Login
+						</Button>
 					</form>
-					<Link to="/signup" className="mt-2 d-block">Don't have an account?</Link>
-				</div>
-			</div>
-		</div>
+					<Link to="/signup">
+						<Typography
+							variant="body2"
+							display="block"
+							color="primary"
+							fontWeight="fontWeightBold"
+							className={classes.marginTop}>
+								Don't have an account?
+						</Typography>
+					</Link>
+				</Box>
+			</Container>
+		</>
 	);
 }
 

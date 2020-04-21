@@ -1,12 +1,32 @@
-import React, { useContext } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import { AuthContext } from "../contexts/Auth"
+import React, {useContext} from 'react'
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 
-import { Auth } from '../services/firebase'
+import {makeStyles} from '@material-ui/core/styles';
+import {useHistory} from 'react-router-dom'
+import {AuthContext} from "../contexts/Auth"
+import {Auth} from '../services/firebase'
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1
+    },
+    toolbar: {
+        padding: 0
+    },
+    title: {
+        flexGrow: 1,
+        cursor: 'pointer'
+    }
+}))
 
 const Header = () => {
-    const history = useHistory();
-    const { currentUser } = useContext(AuthContext);
+    const history = useHistory()
+    const classes = useStyles()
+    const {currentUser} = useContext(AuthContext)
 
     const handleSignOut = () => {
         Auth.signOut().then(() => {
@@ -15,24 +35,40 @@ const Header = () => {
         })
     }
 
+    const goTo = (path) => {
+        history.push(path)
+    }
+
     return (
-        <header className="header">
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div className="container">
-                    <Link to="/" className="navbar-brand">POKERIT</Link>
-                    { currentUser && (
-                        <>
-                            <ul className="navbar-nav mr-auto">
-                                <li className="nav-item">
-                                    <Link to="/" className="nav-link">Home</Link>
-                                </li>
-                            </ul>
-                            <button onClick={ handleSignOut } className="btn btn-danger my-2 my-sm-0">Sign out</button>
-                        </>
-                    )}
-                </div>
-            </nav>
-        </header>
+        <div className={classes.root}>
+            <AppBar
+                position="static">
+                <Container>
+                    <Toolbar className={classes.toolbar}>
+                        <Typography
+                            onClick={() => goTo('/')}
+                            variant="h6"
+                            className={classes.title}>
+                            POKER IT
+                        </Typography>
+                        {currentUser && (
+                            <>
+                                <Button
+                                    onClick={() => goTo('/')}
+                                    color="inherit">
+                                    HOME
+                                </Button>
+                                <Button
+                                    onClick={handleSignOut}
+                                    color="inherit">
+                                    SIGN OUT
+                                </Button>
+                            </>
+                        )}
+                    </Toolbar>
+                </Container>
+            </AppBar>
+        </div>
     );
 }
 
