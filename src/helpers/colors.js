@@ -1,19 +1,19 @@
-import {makeStyles} from '@material-ui/core/styles'
-import {blueGrey, pink} from '@material-ui/core/colors'
+import { makeStyles } from '@material-ui/core/styles';
+import { blueGrey, pink } from '@material-ui/core/colors';
 
-const useColors = makeStyles((theme) => ({
-	pinkBg: {
-		backgroundColor: pink[700]
+const useColors = makeStyles(() => ({
+    pinkBg: {
+        backgroundColor: pink[700],
     },
     pink: {
-		color: pink[700]
-	},
+        color: pink[700],
+    },
     blueGreyBg: {
-		backgroundColor: blueGrey[800]
+        backgroundColor: blueGrey[800],
     },
     blueGrey: {
-		color: blueGrey[800]
-    }
-}))
+        color: blueGrey[800],
+    },
+}));
 
-export default useColors
+export default useColors;
