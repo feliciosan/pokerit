@@ -38,7 +38,7 @@ const setLocalStorageUserKey = (userId, roomId) => {
     localStorage.setItem('user_id', `${userId}_${roomId}`);
 };
 
-const FormPlayer = ({ submit }) => {
+const FormPlayer = ({ submit, formIsLoading }) => {
     const classes = makeStyles((theme) => ({
         marginTop: {
             marginTop: theme.spacing(2),
@@ -46,8 +46,14 @@ const FormPlayer = ({ submit }) => {
     }))();
 
     return (
-        <Container maxWidth="xs">
-            <Box marginTop={5} padding={3} borderRadius={5} border={1}>
+        <Container maxWidth="xs" disableGutters>
+            <Box
+                marginTop={5}
+                padding={3}
+                borderRadius={5}
+                border={1}
+                borderColor="grey.300"
+            >
                 <Typography variant="h5" color="primary">
                     Your name
                 </Typography>
@@ -57,6 +63,7 @@ const FormPlayer = ({ submit }) => {
                         label="Username"
                         variant="outlined"
                         className={classes.marginTop}
+                        disabled={formIsLoading}
                         required
                         fullWidth
                     />
@@ -65,9 +72,10 @@ const FormPlayer = ({ submit }) => {
                         size="large"
                         variant="contained"
                         color="primary"
+                        disabled={formIsLoading}
+                        className={classes.marginTop}
                         fullWidth
                         required
-                        className={classes.marginTop}
                     >
                         Join
                     </Button>
@@ -78,6 +86,12 @@ const FormPlayer = ({ submit }) => {
 };
 
 const ListPlayers = ({ room, userId }) => {
+    const showResult = (_room, _userId, key) => {
+        return _room.show_result || _userId === key
+            ? _room.players[key].card
+            : '?';
+    };
+
     return (
         <List component="nav">
             {Object.keys(room.players)
@@ -95,24 +109,19 @@ const ListPlayers = ({ room, userId }) => {
                             room.players[key].card !== 0 ? (
                                 <Badge
                                     color="primary"
-                                    badgeContent={
-                                        room.show_result || userId === key
-                                            ? room.players[key].card
-                                            : '?'
-                                    }
+                                    badgeContent={showResult(room, userId, key)}
                                 ></Badge>
                             ) : room.players[key].card === 0 ? (
-                                <Badge color="secondary" variant="dot" showZero>
-                                    {room.show_result || userId === key
-                                        ? room.players[key].card
-                                        : '?'}
-                                </Badge>
+                                <Badge
+                                    color="secondary"
+                                    badgeContent={showResult(room, userId, key)}
+                                    showZero
+                                ></Badge>
                             ) : (
-                                <Badge color="primary" variant="dot">
-                                    {room.show_result || userId === key
-                                        ? room.players[key].card
-                                        : '?'}
-                                </Badge>
+                                <Badge
+                                    color="primary"
+                                    badgeContent={showResult(room, userId, key)}
+                                ></Badge>
                             )}
                         </ListItemSecondaryAction>
                     </ListItem>
@@ -128,6 +137,7 @@ const Room = () => {
     const [average, setAverage] = useState(0);
     const [docExists, setDocExists] = useState(true);
     const [pageLoading, setPageLoading] = useState(true);
+    const [formIsLoading, setFormIsLoading] = useState(false);
     const [userId, setUserId] = useState(getLocalStorageUserKey(id));
 
     const updateCard = (val) => {
@@ -180,14 +190,14 @@ const Room = () => {
         return data;
     };
 
-    const handleEnter = (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
+        setFormIsLoading(true);
 
         const { name } = event.target.elements;
         const docRef = Firestore().collection('rooms').doc(id);
-        const newUserId = currentUser
-            ? currentUser.uid
-            : (Math.random() * 10).toString().replace('.', '');
+        const guestUserId = (Math.random() * 10).toString().replace('.', '');
+        const newUserId = currentUser ? currentUser.uid : guestUserId;
         const userKey = `${newUserId}_${id}`;
         const player = generatePlayer({
             id: userKey,
@@ -197,6 +207,7 @@ const Room = () => {
         docRef.update(player).then(() => {
             setUserId(userKey);
             setLocalStorageUserKey(newUserId, id);
+            setFormIsLoading(false);
         });
     };
 
@@ -233,7 +244,7 @@ const Room = () => {
 
         docRef.onSnapshot((doc) => {
             if (doc.exists) {
-                const currentRoom = doc.data();
+                const currentRoom = { id: doc.id, ...doc.data() };
                 const filteredPlayers = {};
 
                 Object.keys(currentRoom.players).forEach((key) => {
@@ -262,9 +273,9 @@ const Room = () => {
     }
 
     return (
-        <>
+        <Container>
             {!pageLoading && (
-                <Container>
+                <>
                     <Box
                         display={{ sm: 'flex' }}
                         marginTop={4}
@@ -272,40 +283,45 @@ const Room = () => {
                         justifyContent="space-between"
                     >
                         <Typography variant="h4">{room.name}</Typography>
-                        {currentUser && room.user_id === currentUser.uid && (
-                            <Box display="flex" marginTop={{ xs: 1 }}>
-                                <Box>
-                                    <Button
-                                        onClick={() =>
-                                            showAllCards(!room.show_result)
-                                        }
-                                        color={
-                                            room.show_result
-                                                ? 'secondary'
-                                                : 'primary'
-                                        }
-                                        variant="contained"
-                                    >
-                                        {!room.show_result
-                                            ? 'Show result'
-                                            : 'Hide result'}
-                                    </Button>
+                        {userId &&
+                            currentUser &&
+                            currentUser.uid === room.user_id && (
+                                <Box display="flex" marginTop={{ xs: 1 }}>
+                                    <Box>
+                                        <Button
+                                            onClick={() =>
+                                                showAllCards(!room.show_result)
+                                            }
+                                            color={
+                                                room.show_result
+                                                    ? 'secondary'
+                                                    : 'primary'
+                                            }
+                                            variant="contained"
+                                        >
+                                            {!room.show_result
+                                                ? 'Show result'
+                                                : 'Hide result'}
+                                        </Button>
+                                    </Box>
+                                    <Box marginLeft={1.5}>
+                                        <Button
+                                            onClick={resetCards}
+                                            color="secondary"
+                                            variant="outlined"
+                                        >
+                                            Reset
+                                        </Button>
+                                    </Box>
                                 </Box>
-                                <Box marginLeft={1.5}>
-                                    <Button
-                                        onClick={resetCards}
-                                        color="secondary"
-                                        variant="outlined"
-                                    >
-                                        Reset
-                                    </Button>
-                                </Box>
-                            </Box>
-                        )}
+                            )}
                     </Box>
                     <Divider />
                     {!userId ? (
-                        <FormPlayer submit={handleEnter} />
+                        <FormPlayer
+                            submit={handleSubmit}
+                            formIsLoading={formIsLoading}
+                        />
                     ) : (
                         <Grid container>
                             <Grid item xs={12} sm={4}>
@@ -316,7 +332,11 @@ const Room = () => {
                                     borderRadius={5}
                                     paddingBottom={1}
                                 >
-                                    <PokerCards updateCard={updateCard} />
+                                    <PokerCards
+                                        updateCard={updateCard}
+                                        userId={userId}
+                                        room={room}
+                                    />
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={8}>
@@ -353,14 +373,15 @@ const Room = () => {
                             </Grid>
                         </Grid>
                     )}
-                </Container>
+                </>
             )}
-        </>
+        </Container>
     );
 };
 
 FormPlayer.propTypes = {
     submit: PropTypes.func.isRequired,
+    formIsLoading: PropTypes.bool.isRequired,
 };
 
 ListPlayers.propTypes = {

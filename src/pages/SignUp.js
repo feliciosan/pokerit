@@ -46,11 +46,11 @@ const SignUp = () => {
     }
 
     return (
-        <>
+        <Container>
             <Box height="4px">
                 {isLoading && <LinearProgress color="primary" />}
             </Box>
-            <Container maxWidth="xs">
+            <Container maxWidth="xs" disableGutters>
                 <Box
                     marginTop={5}
                     padding={3}
@@ -115,7 +115,7 @@ const SignUp = () => {
                     </Link>
                 </Box>
             </Container>
-        </>
+        </Container>
     );
 };
 
