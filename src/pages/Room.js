@@ -161,16 +161,20 @@ const Room = () => {
 
     const resetCards = () => {
         const docRef = Firestore().collection('rooms').doc(id);
-        const playersToUpdate = room.players;
+        const playersToUpdate = {};
+        const data = {
+            show_result: false,
+        };
 
-        Object.keys(playersToUpdate).forEach((key) => {
+        Object.keys(room.players).forEach((key) => {
             playersToUpdate[key].card = 0;
         });
 
-        docRef.update({
-            show_result: false,
-            players: playersToUpdate,
-        });
+        if (Object.keys(playersToUpdate).length) {
+            data.players = playersToUpdate;
+        }
+
+        docRef.update(data);
     };
 
     const generatePlayer = (user, val) => {
