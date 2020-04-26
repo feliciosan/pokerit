@@ -358,7 +358,7 @@ const Room = () => {
                                             {room.players[userId] &&
                                             room.players[userId].active
                                                 ? 'Disable myself'
-                                                : 'Active myself'}
+                                                : 'Enable myself'}
                                         </Button>
                                         <Typography variant="h6">
                                             Average:{' '}

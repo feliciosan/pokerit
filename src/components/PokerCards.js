@@ -7,18 +7,19 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { Firestore } from '../services/firebase';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-const getTechnique = (action = 'PLANNING_POKER') => {
+const getTechnique = (action) => {
     const technique = {
         PLANNING_POKER: [0, 0.5, 1, 2, 3, 4, 8, 13, 20, 40, 100],
         FIBONACCI: [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144],
-        NATURAL: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        SEQUENTIAL: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
     };
 
-    return technique[action];
+    return technique[action] || technique['PLANNING_POKER'];
 };
 
 const PokerCards = ({ updateCard, room, userId }) => {
@@ -62,7 +63,7 @@ const PokerCards = ({ updateCard, room, userId }) => {
                                 Planning Poker
                             </MenuItem>
                             <MenuItem value="FIBONACCI">Fibonacci</MenuItem>
-                            <MenuItem value="NATURAL">Natrual</MenuItem>
+                            <MenuItem value="SEQUENTIAL">Sequential</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>
@@ -75,16 +76,39 @@ const PokerCards = ({ updateCard, room, userId }) => {
                         padding={{ xs: 1, sm: 2 }}
                         paddingBottom={1}
                     >
-                        <Button
-                            onClick={() => updateCard(card)}
-                            size="small"
-                            variant="contained"
-                            color="secondary"
-                            className={classes.button}
-                            fullWidth
-                        >
-                            <Typography variant="h5">{card}</Typography>
-                        </Button>
+                        {room.technique === 'SEQUENTIAL' ? (
+                            <ButtonGroup orientation="vertical" fullWidth>
+                                <Button
+                                    onClick={() => updateCard(card - 0.5)}
+                                    variant="contained"
+                                    color="secondary"
+                                    fullWidth
+                                >
+                                    <Typography variant="h6">
+                                        {card - 0.5}
+                                    </Typography>
+                                </Button>
+                                <Button
+                                    onClick={() => updateCard(card)}
+                                    variant="contained"
+                                    color="secondary"
+                                    fullWidth
+                                >
+                                    <Typography variant="h6">{card}</Typography>
+                                </Button>
+                            </ButtonGroup>
+                        ) : (
+                            <Button
+                                onClick={() => updateCard(card)}
+                                size="small"
+                                variant="contained"
+                                color="secondary"
+                                className={classes.button}
+                                fullWidth
+                            >
+                                <Typography variant="h6">{card}</Typography>
+                            </Button>
+                        )}
                     </Box>
                 ))}
             </Box>
