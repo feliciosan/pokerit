@@ -4,10 +4,10 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Firestore } from '../services/firebase';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,10 +16,21 @@ const getTechnique = (action) => {
     const technique = {
         PLANNING_POKER: [0, 0.5, 1, 2, 3, 4, 8, 13, 20, 40, 100],
         FIBONACCI: [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144],
-        SEQUENTIAL: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        SEQUENTIAL: getSequentialRange(),
     };
 
     return technique[action] || technique['PLANNING_POKER'];
+};
+
+const getSequentialRange = (min = 1, max = 20, interval = 1) => {
+    const items = [];
+
+    while (min <= max) {
+        items.push(min);
+        min += interval;
+    }
+
+    return items;
 };
 
 const PokerCards = ({ updateCard, room, userId }) => {
@@ -48,23 +59,28 @@ const PokerCards = ({ updateCard, room, userId }) => {
         <>
             {isAdmin && (
                 <Box paddingLeft={2} paddingRight={2} paddingTop={2}>
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel id="poker-select-outlined-label">
-                            Choose your plan
-                        </InputLabel>
-                        <Select
-                            labelId="poker-select-outlined-label"
-                            id="poker-select-outlined"
-                            onChange={(event) => handleChange(event, room.id)}
-                            label="Choose your plan"
+                    <FormControl component="fieldset">
+                        <RadioGroup
+                            row
                             value={room.technique || 'PLANNING_POKER'}
+                            onChange={(event) => handleChange(event, room.id)}
                         >
-                            <MenuItem value="PLANNING_POKER">
-                                Planning Poker
-                            </MenuItem>
-                            <MenuItem value="FIBONACCI">Fibonacci</MenuItem>
-                            <MenuItem value="SEQUENTIAL">Sequential</MenuItem>
-                        </Select>
+                            <FormControlLabel
+                                value="PLANNING_POKER"
+                                control={<Radio color="primary" />}
+                                label="Planning Poker"
+                            />
+                            <FormControlLabel
+                                value="FIBONACCI"
+                                control={<Radio color="primary" />}
+                                label="Fibonacci"
+                            />
+                            <FormControlLabel
+                                value="SEQUENTIAL"
+                                control={<Radio color="primary" />}
+                                label="Sequential"
+                            />
+                        </RadioGroup>
                     </FormControl>
                 </Box>
             )}

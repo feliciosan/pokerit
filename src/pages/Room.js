@@ -96,6 +96,7 @@ const ListPlayers = ({ room, userId }) => {
         <List component="nav">
             {Object.keys(room.players)
                 .sort()
+                .filter((key) => room.players[key].active)
                 .map((key) => (
                     <ListItem divider key={key}>
                         <ListItemAvatar>
@@ -110,6 +111,7 @@ const ListPlayers = ({ room, userId }) => {
                                 <Badge
                                     color="primary"
                                     badgeContent={showResult(room, userId, key)}
+                                    max={144}
                                 ></Badge>
                             ) : room.players[key].card === 0 ? (
                                 <Badge
@@ -121,6 +123,7 @@ const ListPlayers = ({ room, userId }) => {
                                 <Badge
                                     color="primary"
                                     badgeContent={showResult(room, userId, key)}
+                                    max={144}
                                 ></Badge>
                             )}
                         </ListItemSecondaryAction>
@@ -150,10 +153,10 @@ const Room = () => {
     };
 
     const updateActive = () => {
-        const data = {};
-        const status = !room.players[userId] ? true : false;
         const docRef = Firestore().collection('rooms').doc(id);
         const currentPlayerStatus = `players.${userId}.active`;
+        const status = !room.players[userId].active;
+        const data = {};
 
         data[currentPlayerStatus] = status;
         docRef.update(data);
@@ -161,7 +164,7 @@ const Room = () => {
 
     const resetCards = () => {
         const docRef = Firestore().collection('rooms').doc(id);
-        const playersToUpdate = {};
+        const playersToUpdate = room.players;
         const data = {
             show_result: false,
         };
@@ -223,21 +226,23 @@ const Room = () => {
         });
     };
 
-    const calcAvarage = (currentRoom) => {
-        if (!currentRoom.show_result) {
-            return;
-        }
-
-        const players = Object.values(currentRoom.players);
+    const calcAvarage = (playersObj) => {
+        const players = Object.values(playersObj);
+        let activedPlayersAmount = 0;
         let sum = 0;
         let result = 0;
 
         players.forEach((player) => {
+            if (!player.active) {
+                return;
+            }
+
             sum += player.card;
+            activedPlayersAmount++;
         });
 
-        if (players.length) {
-            result = sum / players.length;
+        if (activedPlayersAmount) {
+            result = sum / activedPlayersAmount;
         }
 
         setAverage(result);
@@ -249,18 +254,9 @@ const Room = () => {
         docRef.onSnapshot((doc) => {
             if (doc.exists) {
                 const currentRoom = { id: doc.id, ...doc.data() };
-                const filteredPlayers = {};
-
-                Object.keys(currentRoom.players).forEach((key) => {
-                    if (currentRoom.players[key].active) {
-                        filteredPlayers[key] = currentRoom.players[key];
-                    }
-                });
-
-                currentRoom.players = filteredPlayers;
 
                 if (currentRoom.show_result) {
-                    calcAvarage(currentRoom);
+                    calcAvarage(currentRoom.players);
                 }
 
                 setRoom(currentRoom);
@@ -328,7 +324,7 @@ const Room = () => {
                         />
                     ) : (
                         <Grid container>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={5}>
                                 <Box
                                     border={1}
                                     borderColor="grey.300"
@@ -343,7 +339,7 @@ const Room = () => {
                                     />
                                 </Box>
                             </Grid>
-                            <Grid item xs={12} sm={8}>
+                            <Grid item xs={12} sm={7}>
                                 <Box
                                     padding={2}
                                     borderColor="grey.300"
