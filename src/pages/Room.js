@@ -15,12 +15,16 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import PokerCards from '../components/PokerCards';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from 'react-router-dom';
 import { Firestore } from '../services/firebase';
 import { AuthContext } from '../contexts/Auth';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import NotFound from './NotFound';
 
@@ -133,6 +137,7 @@ const Room = () => {
     const { currentUser } = useContext(AuthContext);
     const [room, setRoom] = useState({ players: {} });
     const [docExists, setDocExists] = useState(true);
+    const [copied, setCopied] = useState(false);
     const [pageLoading, setPageLoading] = useState(true);
     const [formIsLoading, setFormIsLoading] = useState(false);
     const [userId, setUserId] = useState(getLocalStorageUserKey(id));
@@ -251,7 +256,28 @@ const Room = () => {
                             currentUser &&
                             currentUser.uid === room.user_id && (
                                 <Box display="flex" marginTop={{ xs: 1 }}>
-                                    <Box>
+                                    <Box marginTop={-0.7}>
+                                        <CopyToClipboard
+                                            text={window.location.href}
+                                            onCopy={() => setCopied(true)}
+                                        >
+                                            <Tooltip
+                                                title="Copy url to clipboard"
+                                                placement="left"
+                                            >
+                                                <IconButton>
+                                                    <FileCopyIcon
+                                                        color={
+                                                            copied
+                                                                ? 'primary'
+                                                                : 'default'
+                                                        }
+                                                    />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </CopyToClipboard>
+                                    </Box>
+                                    <Box marginLeft={1.5}>
                                         <Button
                                             onClick={() =>
                                                 showAllCards(!room.show_result)
