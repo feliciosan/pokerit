@@ -106,24 +106,19 @@ const ListPlayers = ({ room, userId }) => {
                         </ListItemAvatar>
                         <ListItemText primary={room.players[key].name} />
                         <ListItemSecondaryAction>
-                            {(room.show_result || userId === key) &&
-                            room.players[key].card !== 0 ? (
+                            {room.players[key].card !== null && (
                                 <Badge
                                     color="primary"
-                                    badgeContent={showResult(room, userId, key)}
-                                    max={144}
-                                ></Badge>
-                            ) : room.players[key].card === 0 ? (
-                                <Badge
-                                    color="secondary"
                                     badgeContent={showResult(room, userId, key)}
                                     showZero
-                                ></Badge>
-                            ) : (
-                                <Badge
-                                    color="primary"
-                                    badgeContent={showResult(room, userId, key)}
                                     max={144}
+                                ></Badge>
+                            )}
+
+                            {room.players[key].card === null && (
+                                <Badge
+                                    color="secondary"
+                                    badgeContent="?"
                                 ></Badge>
                             )}
                         </ListItemSecondaryAction>
@@ -137,7 +132,6 @@ const Room = () => {
     const { id } = useParams();
     const { currentUser } = useContext(AuthContext);
     const [room, setRoom] = useState({ players: {} });
-    const [average, setAverage] = useState(0);
     const [docExists, setDocExists] = useState(true);
     const [pageLoading, setPageLoading] = useState(true);
     const [formIsLoading, setFormIsLoading] = useState(false);
@@ -170,7 +164,7 @@ const Room = () => {
         };
 
         Object.keys(room.players).forEach((key) => {
-            playersToUpdate[key].card = 0;
+            playersToUpdate[key].card = null;
         });
 
         if (Object.keys(playersToUpdate).length) {
@@ -180,19 +174,15 @@ const Room = () => {
         docRef.update(data);
     };
 
-    const generatePlayer = (user, val) => {
+    const generatePlayer = (user) => {
         const data = {};
         const currentPlayer = `players.${user.id}`;
 
         data[currentPlayer] = {
             active: true,
+            name: user.name,
+            card: null,
         };
-
-        if (user.name) {
-            data[currentPlayer].name = user.name;
-        }
-
-        data[currentPlayer].card = val || 0;
 
         return data;
     };
@@ -226,38 +216,12 @@ const Room = () => {
         });
     };
 
-    const calcAvarage = (playersObj) => {
-        const players = Object.values(playersObj);
-        let activedPlayersAmount = 0;
-        let sum = 0;
-        let result = 0;
-
-        players.forEach((player) => {
-            if (!player.active) {
-                return;
-            }
-
-            sum += player.card;
-            activedPlayersAmount++;
-        });
-
-        if (activedPlayersAmount) {
-            result = sum / activedPlayersAmount;
-        }
-
-        setAverage(result);
-    };
-
     useEffect(() => {
         const docRef = Firestore().collection('rooms').doc(id);
 
         docRef.onSnapshot((doc) => {
             if (doc.exists) {
                 const currentRoom = { id: doc.id, ...doc.data() };
-
-                if (currentRoom.show_result) {
-                    calcAvarage(currentRoom.players);
-                }
 
                 setRoom(currentRoom);
                 setPageLoading(false);
@@ -360,12 +324,6 @@ const Room = () => {
                                                 ? 'Disable myself'
                                                 : 'Enable myself'}
                                         </Button>
-                                        <Typography variant="h6">
-                                            Average:{' '}
-                                            {room.show_result
-                                                ? average.toFixed(2)
-                                                : '?'}
-                                        </Typography>
                                     </Box>
                                     <Divider />
                                     <ListPlayers room={room} userId={userId} />
