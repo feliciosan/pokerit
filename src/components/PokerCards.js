@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const getTechnique = (action) => {
     const technique = {
-        PLANNING_POKER: [0, 0.5, 1, 2, 3, 4, 8, 13, 20, 40, 100],
+        PLANNING_POKER: [0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100],
         FIBONACCI: [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144],
         SEQUENTIAL: getSequentialRange(),
     };
