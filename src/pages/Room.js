@@ -1,160 +1,129 @@
 import React, { useState, useContext, useEffect } from 'react';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Typography from '@material-ui/core/Typography';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Person from '@material-ui/icons/Person';
-import Badge from '@material-ui/core/Badge';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 import PokerCards from '../components/PokerCards';
+import PokerPlayers from '../components/PokerPlayers';
+import FormPlayer from '../components/FormPlayer';
+import NotFound from './NotFound';
 
-import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from 'react-router-dom';
 import { Firestore } from '../services/firebase';
 import { AuthContext } from '../contexts/Auth';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import NotFound from './NotFound';
+import { AiOutlineCheck } from 'react-icons/ai';
+import { AiFillCopy } from 'react-icons/ai';
+import { Container, PageHeader, PageTitle } from '../styles/components';
+import { Button } from '../styles/form';
+
+const PageHeaderActions = styled.div`
+    display: flex;
+    width: 330px;
+    ${Button} {
+        flex: 1;
+        margin-left: 15px;
+    }
+`;
+
+const IconButton = styled.div`
+    height: 50px;
+    width: 50px;
+    font-size: 30px;
+    color: ${(props) => (props.copied ? '#68b968' : '#bdbdbd')};
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    :hover {
+        background: #ececec;
+    }
+`;
+
+const PokerBox = styled.div`
+    display: flex;
+    margin-top: 25px;
+`;
+
+const PokerPanel = styled.div`
+    flex: 0.8;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: #ececec;
+    border-radius: 4px;
+    padding-top: 20px;
+`;
+
+const PokerList = styled(PokerPanel)`
+    margin-left: 25px;
+    background: #ececec;
+    border-radius: 4px;
+    padding: 20px;
+    flex: 1.2;
+`;
+
+const ActiveButton = styled(Button)`
+    background: ${(props) => (props.active ? '#68b968' : '#bdbdbd')};
+    width: 85px;
+    position: relative;
+    margin-left: 10px;
+`;
+
+const ActiveButtonIcon = styled.span`
+    height: 22px;
+    width: 22px;
+    background: #f2f2f2;
+    position: absolute;
+    left: -10px;
+    border-radius: 3px;
+    border: 2px solid ${(props) => (props.active ? '#68b968' : '#bdbdbd')};
+    top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #68b968;
+`;
 
 const getLocalStorageUserKey = (roomId) => {
-    const localStorageUserId = localStorage.getItem('user_id');
+    const localStoragePlayerId = localStorage.getItem('user_id');
 
-    if (!localStorageUserId || roomId !== localStorageUserId.split('_')[1]) {
+    if (
+        !localStoragePlayerId ||
+        roomId !== localStoragePlayerId.split('_')[1]
+    ) {
         return null;
     }
 
-    return localStorageUserId;
+    return localStoragePlayerId;
 };
 
-const setLocalStorageUserKey = (userId, roomId) => {
-    localStorage.setItem('user_id', `${userId}_${roomId}`);
-};
-
-const FormPlayer = ({ submit, formIsLoading }) => {
-    const classes = makeStyles((theme) => ({
-        marginTop: {
-            marginTop: theme.spacing(2),
-        },
-    }))();
-
-    return (
-        <Container maxWidth="xs" disableGutters>
-            <Box
-                marginTop={5}
-                padding={3}
-                borderRadius={5}
-                border={1}
-                borderColor="grey.300"
-            >
-                <Typography variant="h5" color="primary">
-                    Your name
-                </Typography>
-                <form onSubmit={submit}>
-                    <TextField
-                        name="name"
-                        label="Username"
-                        variant="outlined"
-                        className={classes.marginTop}
-                        disabled={formIsLoading}
-                        required
-                        fullWidth
-                    />
-                    <Button
-                        type="submit"
-                        size="large"
-                        variant="contained"
-                        color="primary"
-                        disabled={formIsLoading}
-                        className={classes.marginTop}
-                        fullWidth
-                        required
-                    >
-                        Join
-                    </Button>
-                </form>
-            </Box>
-        </Container>
-    );
-};
-
-const ListPlayers = ({ room, userId }) => {
-    const showResult = (_room, _userId, key) => {
-        return _room.show_result || _userId === key
-            ? _room.players[key].card
-            : '?';
-    };
-
-    return (
-        <List component="nav">
-            {Object.keys(room.players)
-                .sort()
-                .filter((key) => room.players[key].active)
-                .map((key) => (
-                    <ListItem divider key={key}>
-                        <ListItemAvatar>
-                            <Avatar variant="rounded">
-                                <Person />
-                            </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText primary={room.players[key].name} />
-                        <ListItemSecondaryAction>
-                            {room.players[key].card !== null && (
-                                <Badge
-                                    color="primary"
-                                    badgeContent={showResult(room, userId, key)}
-                                    showZero
-                                    max={144}
-                                ></Badge>
-                            )}
-
-                            {room.players[key].card === null && (
-                                <Badge
-                                    color="secondary"
-                                    badgeContent="?"
-                                ></Badge>
-                            )}
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                ))}
-        </List>
-    );
+const setLocalStoragePlayerKey = (playerId, roomId) => {
+    localStorage.setItem('user_id', `${playerId}_${roomId}`);
 };
 
 const Room = () => {
     const { id } = useParams();
-    const { currentUser } = useContext(AuthContext);
+    const { loggedUser } = useContext(AuthContext);
     const [room, setRoom] = useState({ players: {} });
     const [docExists, setDocExists] = useState(true);
     const [copied, setCopied] = useState(false);
     const [pageLoading, setPageLoading] = useState(true);
     const [formIsLoading, setFormIsLoading] = useState(false);
-    const [userId, setUserId] = useState(getLocalStorageUserKey(id));
+    const [playerId, setPlayerId] = useState(getLocalStorageUserKey(id));
 
     const updateCard = (val) => {
         const data = {};
         const docRef = Firestore().collection('rooms').doc(id);
-        const currentPlayerCard = `players.${userId}.card`;
+        const currentPlayerCard = `players.${playerId}.card`;
 
         data[currentPlayerCard] = val;
         docRef.update(data);
     };
 
-    const updateActive = () => {
+    const updateActive = (_playerId) => {
         const docRef = Firestore().collection('rooms').doc(id);
-        const currentPlayerStatus = `players.${userId}.active`;
-        const status = !room.players[userId].active;
+        const currentPlayerStatus = `players.${_playerId}.active`;
+        const status = !room.players[_playerId].active;
         const data = {};
 
         data[currentPlayerStatus] = status;
@@ -179,13 +148,13 @@ const Room = () => {
         docRef.update(data);
     };
 
-    const generatePlayer = (user) => {
+    const generatePlayer = (player) => {
         const data = {};
-        const currentPlayer = `players.${user.id}`;
+        const currentPlayer = `players.${player.id}`;
 
         data[currentPlayer] = {
             active: true,
-            name: user.name,
+            name: player.name,
             card: null,
         };
 
@@ -198,18 +167,18 @@ const Room = () => {
 
         const { name } = event.target.elements;
         const docRef = Firestore().collection('rooms').doc(id);
-        const guestUserId = (Math.random() * 10).toString().replace('.', '');
-        const newUserId = currentUser ? currentUser.uid : guestUserId;
-        const userKey = `${newUserId}_${id}`;
+        const guestPlayerId = Math.random().toString(36).substr(2);
+        const newPlayerId = loggedUser ? loggedUser.uid : guestPlayerId;
+        const playerKey = `${newPlayerId}_${id}`;
         const player = generatePlayer({
-            id: userKey,
+            id: playerKey,
             name: name.value,
         });
 
         docRef.update(player).then(() => {
-            setUserId(userKey);
-            setLocalStorageUserKey(newUserId, id);
+            setLocalStoragePlayerKey(newPlayerId, id);
             setFormIsLoading(false);
+            setPlayerId(playerKey);
         });
     };
 
@@ -223,18 +192,24 @@ const Room = () => {
 
     useEffect(() => {
         const docRef = Firestore().collection('rooms').doc(id);
+        let unmounted = false;
 
         docRef.onSnapshot((doc) => {
-            if (doc.exists) {
-                const currentRoom = { id: doc.id, ...doc.data() };
+            if (!unmounted) {
+                if (doc.exists) {
+                    const currentRoom = { id: doc.id, ...doc.data() };
 
-                setRoom(currentRoom);
+                    setRoom(currentRoom);
+                    setPageLoading(false);
+                    return;
+                }
+
+                setDocExists(false);
                 setPageLoading(false);
-                return;
             }
-
-            setDocExists(false);
         });
+
+        return () => (unmounted = true);
     }, [id]);
 
     if (!docExists) {
@@ -245,117 +220,71 @@ const Room = () => {
         <Container>
             {!pageLoading && (
                 <>
-                    <Box
-                        display={{ sm: 'flex' }}
-                        marginTop={4}
-                        marginBottom={2}
-                        justifyContent="space-between"
-                    >
-                        <Typography variant="h4">{room.name}</Typography>
-                        {userId &&
-                            currentUser &&
-                            currentUser.uid === room.user_id && (
-                                <Box display="flex" marginTop={{ xs: 1 }}>
-                                    <Box marginTop={-0.7}>
-                                        <CopyToClipboard
-                                            text={window.location.href}
-                                            onCopy={() => setCopied(true)}
-                                        >
-                                            <Tooltip
-                                                title="Copy url to clipboard"
-                                                placement="left"
-                                            >
-                                                <IconButton>
-                                                    <FileCopyIcon
-                                                        color={
-                                                            copied
-                                                                ? 'primary'
-                                                                : 'default'
-                                                        }
-                                                    />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </CopyToClipboard>
-                                    </Box>
-                                    <Box marginLeft={1.5}>
-                                        <Button
-                                            onClick={() =>
-                                                showAllCards(!room.show_result)
-                                            }
-                                            color={
-                                                room.show_result
-                                                    ? 'secondary'
-                                                    : 'primary'
-                                            }
-                                            variant="contained"
-                                        >
-                                            {!room.show_result
-                                                ? 'Show result'
-                                                : 'Hide result'}
-                                        </Button>
-                                    </Box>
-                                    <Box marginLeft={1.5}>
-                                        <Button
-                                            onClick={resetCards}
-                                            color="secondary"
-                                            variant="outlined"
-                                        >
-                                            Reset
-                                        </Button>
-                                    </Box>
-                                </Box>
-                            )}
-                    </Box>
-                    <Divider />
-                    {!userId ? (
+                    <PageHeader>
+                        <div>
+                            <PageTitle>{room.name}</PageTitle>
+                        </div>
+                        {loggedUser && loggedUser.uid === room.user_id && (
+                            <PageHeaderActions>
+                                <CopyToClipboard
+                                    text={window.location.href}
+                                    onCopy={() => setCopied(true)}
+                                >
+                                    <IconButton
+                                        title="Copy room link!"
+                                        copied={copied}
+                                    >
+                                        <AiFillCopy />
+                                    </IconButton>
+                                </CopyToClipboard>
+                                <Button
+                                    onClick={() =>
+                                        showAllCards(!room.show_result)
+                                    }
+                                    color={room.show_result ? 'purple' : ''}
+                                >
+                                    {!room.show_result ? 'Show All' : 'Hide'}
+                                </Button>
+                                <Button onClick={resetCards}>Reset</Button>
+                            </PageHeaderActions>
+                        )}
+                    </PageHeader>
+                    {!playerId ? (
                         <FormPlayer
                             submit={handleSubmit}
                             formIsLoading={formIsLoading}
                         />
                     ) : (
-                        <Grid container>
-                            <Grid item xs={12} sm={5}>
-                                <Box
-                                    border={1}
-                                    borderColor="grey.300"
-                                    marginTop={3}
-                                    borderRadius={5}
-                                    paddingBottom={1}
+                        <PokerBox>
+                            <PokerPanel>
+                                <PokerCards
+                                    updateCard={updateCard}
+                                    playerId={playerId}
+                                    room={room}
+                                />
+                            </PokerPanel>
+                            <PokerList>
+                                <ActiveButton
+                                    active={room.players[playerId].active}
+                                    onClick={() => updateActive(playerId)}
+                                    small
                                 >
-                                    <PokerCards
-                                        updateCard={updateCard}
-                                        userId={userId}
-                                        room={room}
-                                    />
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={7}>
-                                <Box
-                                    padding={2}
-                                    borderColor="grey.300"
-                                    marginTop={3}
-                                >
-                                    <Box
-                                        display="flex"
-                                        justifyContent="space-between"
-                                        marginBottom={2}
+                                    <ActiveButtonIcon
+                                        active={room.players[playerId].active}
                                     >
-                                        <Button
-                                            onClick={updateActive}
-                                            color="primary"
-                                            variant="outlined"
-                                        >
-                                            {room.players[userId] &&
-                                            room.players[userId].active
-                                                ? 'Disable myself'
-                                                : 'Enable myself'}
-                                        </Button>
-                                    </Box>
-                                    <Divider />
-                                    <ListPlayers room={room} userId={userId} />
-                                </Box>
-                            </Grid>
-                        </Grid>
+                                        {room.players[playerId].active && (
+                                            <AiOutlineCheck />
+                                        )}
+                                    </ActiveButtonIcon>
+                                    Active
+                                </ActiveButton>
+                                <PokerPlayers
+                                    room={room}
+                                    playerId={playerId}
+                                    updateActive={updateActive}
+                                />
+                            </PokerList>
+                        </PokerBox>
                     )}
                 </>
             )}
@@ -366,11 +295,6 @@ const Room = () => {
 FormPlayer.propTypes = {
     submit: PropTypes.func.isRequired,
     formIsLoading: PropTypes.bool.isRequired,
-};
-
-ListPlayers.propTypes = {
-    room: PropTypes.object.isRequired,
-    userId: PropTypes.string.isRequired,
 };
 
 export default Room;

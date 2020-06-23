@@ -6,6 +6,7 @@ import { withRouter, Redirect, Link } from 'react-router-dom';
 import {
     Input,
     Button,
+    FeaturedText,
     FormSignInUp,
     FormTitle,
     FormGroup,
@@ -13,26 +14,18 @@ import {
 } from '../styles/form';
 import { Loading } from '../styles/components';
 
-const SignUp = () => {
+const SignIn = () => {
     const { loggedUser } = useContext(AuthContext);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSignUp = (event) => {
+    const handleSignIn = (event) => {
+        const { email, password } = event.target.elements;
+
         event.preventDefault();
-
-        const { email, password, confirmPassword } = event.target.elements;
-
-        if (password !== confirmPassword) {
-            setError({
-                message: "The passwords you entered don't match",
-            });
-            return;
-        }
-
         setIsLoading(true);
 
-        Auth.createUserWithEmailAndPassword(email.value, password.value).catch(
+        Auth.signInWithEmailAndPassword(email.value, password.value).catch(
             (error) => {
                 setError(error);
                 setIsLoading(false);
@@ -45,10 +38,10 @@ const SignUp = () => {
     }
 
     return (
-        <FormSignInUp onSubmit={handleSignUp}>
+        <FormSignInUp onSubmit={handleSignIn}>
             {error && <FormAlert type="danger">{error.message}</FormAlert>}
 
-            {isLoading ? <Loading /> : <FormTitle>Sign Up</FormTitle>}
+            {isLoading ? <Loading /> : <FormTitle>Sign In</FormTitle>}
             <FormGroup>
                 <Input
                     type="email"
@@ -69,27 +62,22 @@ const SignUp = () => {
                 />
             </FormGroup>
             <FormGroup>
-                <Input
-                    type="password"
-                    name="confirmPassword"
-                    autocomplete="off"
-                    placeholder="Confirm password"
-                    disabled={isLoading}
-                    required
-                />
+                <Link to="/recorver">
+                    <FeaturedText>Forgot password?</FeaturedText>
+                </Link>
             </FormGroup>
             <FormGroup>
                 <Button type="submit" disabled={isLoading}>
                     Go
                 </Button>
             </FormGroup>
-            <Link to="/signin">
+            <Link to="/signup">
                 <Button type="button" color="purple">
-                    Sign In
+                    Sign Up
                 </Button>
             </Link>
         </FormSignInUp>
     );
 };
 
-export default withRouter(SignUp);
+export default withRouter(SignIn);

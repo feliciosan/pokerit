@@ -1,5 +1,16 @@
 import React from 'react';
+import { Container, PageHeader, PageTitle } from '../styles/components';
 
-const NotFound = () => <h2 className="text-center mt-5">Sorry... (404)</h2>;
+const NotFound = () => {
+    return (
+        <Container>
+            <PageHeader>
+                <div>
+                    <PageTitle>Page not found!</PageTitle>
+                </div>
+            </PageHeader>
+        </Container>
+    );
+};
 
 export default NotFound;

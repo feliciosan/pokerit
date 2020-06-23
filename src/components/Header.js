@@ -1,74 +1,109 @@
 import React, { useContext } from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
+import styled from 'styled-components';
+import PropTypes from 'prop-types';
+import { Link, useHistory } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
+import { Container } from '../styles/components';
 import { AuthContext } from '../contexts/Auth';
 import { Auth } from '../services/firebase';
+import { Button } from '../styles/form';
 
-const useStyles = makeStyles(() => ({
-    root: {
-        flexGrow: 1,
-    },
-    toolbar: {
-        padding: 0,
-    },
-    title: {
-        flexGrow: 1,
-        cursor: 'pointer',
-    },
-}));
+const HeaderBar = styled.div`
+    width: 100%;
+    border-bottom: 4px solid;
+    border-color: ${(props) =>
+        ['signin', 'signup'].includes(props.currentRoute)
+            ? 'transparent'
+            : '#d4bd1b'};
+    background: ${(props) =>
+        ['signin', 'signup'].includes(props.currentRoute)
+            ? 'transparent'
+            : '#6d37af'};
+`;
 
-const Header = () => {
+const HeaderContent = styled.div`
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #ffffff;
+`;
+
+const HeaderLogo = styled.span`
+    background: #f2f2f2;
+    color: #823dd5;
+    padding: 5px 10px;
+    font-weight: 600;
+    border-radius: 4px;
+    height: 32px;
+    display: block;
+`;
+
+const HeaderMenu = styled.ul`
+    > li {
+        display: inline-block;
+        margin-left: 10px;
+        > a {
+            cursor: pointer;
+            font-weight: 600;
+            color: #f2f2f2;
+            :hover {
+                opacity: 0.8;
+            }
+        }
+    }
+`;
+
+const Header = ({ currentRoute }) => {
     const history = useHistory();
-    const classes = useStyles();
-    const { currentUser } = useContext(AuthContext);
+    const { loggedUser } = useContext(AuthContext);
 
     const handleSignOut = () => {
         Auth.signOut().then(() => {
             localStorage.removeItem('user_id');
-            history.push('/');
+
+            if (loggedUser) {
+                history.push('/signin');
+            }
         });
     };
 
-    const goTo = (path) => {
-        history.push(path);
-    };
-
     return (
-        <div className={classes.root}>
-            <AppBar position="static">
-                <Container>
-                    <Toolbar className={classes.toolbar}>
-                        <Typography
-                            onClick={() => goTo('/')}
-                            variant="h6"
-                            className={classes.title}
-                        >
-                            POKER IT
-                        </Typography>
-                        {currentUser && (
-                            <>
-                                <Button
-                                    onClick={() => goTo('/')}
-                                    color="inherit"
-                                >
-                                    HOME
-                                </Button>
-                                <Button onClick={handleSignOut} color="inherit">
-                                    SIGN OUT
-                                </Button>
-                            </>
+        <HeaderBar currentRoute={currentRoute}>
+            <Container>
+                <HeaderContent>
+                    <div>
+                        <Link to="/">
+                            <HeaderLogo>POKER IT</HeaderLogo>
+                        </Link>
+                    </div>
+                    <div>
+                        {loggedUser && (
+                            <HeaderMenu>
+                                <li>
+                                    <Link to="/">Home</Link>
+                                </li>
+                                <li>
+                                    <Button
+                                        color="purple"
+                                        small
+                                        onClick={handleSignOut}
+                                    >
+                                        Sign Out
+                                    </Button>
+                                </li>
+                            </HeaderMenu>
                         )}
-                    </Toolbar>
-                </Container>
-            </AppBar>
-        </div>
+                    </div>
+                </HeaderContent>
+            </Container>
+        </HeaderBar>
     );
+};
+
+Header.propTypes = {
+    currentRoute: PropTypes.string.isRequired,
 };
 
 export default Header;

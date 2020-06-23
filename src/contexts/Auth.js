@@ -1,11 +1,13 @@
 import React, { createContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+
 import { Auth } from '../services/firebase';
+import { Loading } from '../styles/components';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [currentUser, setCurrentUser] = useState(null);
+    const [loggedUser, setLoggedUser] = useState(null);
     const [isPending, setPending] = useState(true);
 
     useEffect(() => {
@@ -13,7 +15,7 @@ export const AuthProvider = ({ children }) => {
 
         Auth.onAuthStateChanged((user) => {
             if (!unmounted) {
-                setCurrentUser(user);
+                setLoggedUser(user);
                 setPending(false);
             }
         });
@@ -22,11 +24,11 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     if (isPending) {
-        return <h4 className="text-center mt-5">Loading...</h4>;
+        return <Loading isPageLoading />;
     }
 
     return (
-        <AuthContext.Provider value={{ currentUser }}>
+        <AuthContext.Provider value={{ loggedUser }}>
             {children}
         </AuthContext.Provider>
     );

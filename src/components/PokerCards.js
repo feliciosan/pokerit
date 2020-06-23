@@ -1,16 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { Firestore } from '../services/firebase';
+import styled from 'styled-components';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { Firestore } from '../services/firebase';
+import { Select } from '../styles/form';
+
+const CardList = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+`;
+
+const CardItem = styled.div`
+    flex: 1;
+    padding: 0 10px 20px;
+    display: flex;
+`;
+
+const CardButton = styled.div`
+    flex: 1;
+    width: 80px;
+    height: 130px;
+    background: linear-gradient(110deg, #6d37af 50%, #7741b9 50%);
+    border-bottom: 3px solid #d4bd1b;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    strong {
+        font-size: 26px;
+        font-weight: 600;
+        color: #f2f2f2;
+    }
+    :after {
+        position: absolute;
+        content: '';
+        width: calc(100% - 15px);
+        height: calc(100% - 15px);
+        border: 1px solid #f2f2f2;
+        border-radius: 4px;
+    }
+    :hover {
+        opacity: 0.8;
+    }
+`;
+
+const SelectBox = styled.div`
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 20px;
+    ${Select} {
+        background: #f2f2f2;
+    }
+`;
 
 const getTechnique = (action) => {
     const technique = {
@@ -33,14 +76,9 @@ const getSequentialRange = (min = 1, max = 20, interval = 1) => {
     return items;
 };
 
-const PokerCards = ({ updateCard, room, userId }) => {
+const PokerCards = ({ updateCard, room, playerId }) => {
     const [cards, setCards] = useState([]);
-    const [isAdmin] = useState(room.user_id === userId.split('_')[0]);
-    const classes = makeStyles(() => ({
-        button: {
-            padding: '25px 0',
-        },
-    }))();
+    const [isAdmin] = useState(room.user_id === playerId.split('_')[0]);
 
     const handleChange = (event, roomId) => {
         const technique = event.target.value;
@@ -57,77 +95,27 @@ const PokerCards = ({ updateCard, room, userId }) => {
 
     return (
         <>
-            {isAdmin && (
-                <Box paddingLeft={2} paddingRight={2} paddingTop={2}>
-                    <FormControl component="fieldset">
-                        <RadioGroup
-                            row
-                            value={room.technique || 'PLANNING_POKER'}
-                            onChange={(event) => handleChange(event, room.id)}
-                        >
-                            <FormControlLabel
-                                value="PLANNING_POKER"
-                                control={<Radio color="primary" />}
-                                label="Planning Poker"
-                            />
-                            <FormControlLabel
-                                value="FIBONACCI"
-                                control={<Radio color="primary" />}
-                                label="Fibonacci"
-                            />
-                            <FormControlLabel
-                                value="SEQUENTIAL"
-                                control={<Radio color="primary" />}
-                                label="Sequential"
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                </Box>
-            )}
-            <Box display="flex" flexWrap="wrap">
-                {cards.map((card) => (
-                    <Box
-                        key={card}
-                        flexGrow={1}
-                        padding={{ xs: 1, sm: 2 }}
-                        paddingBottom={1}
-                    >
-                        {room.technique === 'SEQUENTIAL' ? (
-                            <ButtonGroup orientation="vertical" fullWidth>
-                                <Button
-                                    onClick={() => updateCard(card - 0.5)}
-                                    variant="contained"
-                                    color="secondary"
-                                    fullWidth
-                                >
-                                    <Typography variant="h6">
-                                        {card - 0.5}
-                                    </Typography>
-                                </Button>
-                                <Button
-                                    onClick={() => updateCard(card)}
-                                    variant="contained"
-                                    color="secondary"
-                                    fullWidth
-                                >
-                                    <Typography variant="h6">{card}</Typography>
-                                </Button>
-                            </ButtonGroup>
-                        ) : (
-                            <Button
-                                onClick={() => updateCard(card)}
-                                size="small"
-                                variant="contained"
-                                color="secondary"
-                                className={classes.button}
-                                fullWidth
-                            >
-                                <Typography variant="h6">{card}</Typography>
-                            </Button>
-                        )}
-                    </Box>
+            <CardList>
+                {cards.map((card, index) => (
+                    <CardItem key={index}>
+                        <CardButton onClick={() => updateCard(card)}>
+                            <strong>{card}</strong>
+                        </CardButton>
+                    </CardItem>
                 ))}
-            </Box>
+            </CardList>
+            {isAdmin && (
+                <SelectBox>
+                    <Select
+                        value={room.technique || 'PLANNING_POKER'}
+                        onChange={(event) => handleChange(event, room.id)}
+                    >
+                        <option value="PLANNING_POKER">Planning Poker</option>
+                        <option value="FIBONACCI">Fibonacci</option>
+                        <option value="SEQUENTIAL">Sequential</option>
+                    </Select>
+                </SelectBox>
+            )}
         </>
     );
 };
@@ -135,7 +123,7 @@ const PokerCards = ({ updateCard, room, userId }) => {
 PokerCards.propTypes = {
     updateCard: PropTypes.func.isRequired,
     room: PropTypes.object.isRequired,
-    userId: PropTypes.string.isRequired,
+    playerId: PropTypes.string.isRequired,
 };
 
 export default PokerCards;

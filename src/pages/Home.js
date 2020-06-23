@@ -1,45 +1,109 @@
 import React, { useState, useContext, useEffect } from 'react';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Typography from '@material-ui/core/Typography';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import DashboardRounded from '@material-ui/icons/DashboardRounded';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import FormGroup from '@material-ui/core/FormGroup';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-
-import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { Firestore } from '../services/firebase';
 import { AuthContext } from '../contexts/Auth';
 
-const useStyles = makeStyles((theme) => ({
-    formCreate: {
-        marginRight: theme.spacing(1.5),
-    },
-}));
+import { AiTwotoneDelete } from 'react-icons/ai';
+import {
+    Container,
+    PageHeader,
+    PageTitle,
+    Loading,
+} from '../styles/components';
+import { Input, Button } from '../styles/form';
+
+const PageHeaderForm = styled.form`
+    display: flex;
+    width: 330px;
+    input {
+        flex: 2.5;
+    }
+    button {
+        flex: 0.5;
+        margin-left: 15px;
+    }
+`;
+
+const PageContent = styled.div`
+    padding: 25px 15px;
+    background: #ececec;
+    border-radius: 4px;
+    margin-top: 25px;
+`;
+
+const RoomList = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+`;
+
+const RoomItem = styled.div`
+    width: 20%;
+    padding: 15px;
+    float: left;
+`;
+
+const RoomItemContent = styled.div`
+    padding: 30px 25px;
+    background: linear-gradient(110deg, #6d37af 50%, #7741b9 50%);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    border-bottom: 4px solid #d4bd1b;
+    :hover {
+        opacity: 0.9;
+    }
+`;
+
+const RoomItemAvatar = styled.div`
+    height: 25px;
+    padding: 20px 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    span {
+        font-weight: 600;
+        font-size: 38px;
+        color: #f2f2f2;
+    }
+`;
+
+const RoomItemText = styled.p`
+    color: #f2f2f2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+`;
+
+const RemoveItem = styled.div`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #f2f2f2;
+    font-size: 22px;
+    display: flex;
+    :hover {
+        color: #d4bd1b;
+    }
+`;
 
 const Home = () => {
-    const history = useHistory();
-    const classes = useStyles();
-    const { currentUser } = useContext(AuthContext);
+    const { loggedUser } = useContext(AuthContext);
     const [rooms, setRooms] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         let unmounted = false;
 
+        setIsLoading(true);
+
         Firestore()
             .collection('rooms')
-            .where('user_id', '==', currentUser.uid)
+            .where('user_id', '==', loggedUser.uid)
             .orderBy('timestamp', 'desc')
             .onSnapshot((docs) => {
                 const data = [];
@@ -50,102 +114,87 @@ const Home = () => {
 
                 if (!unmounted) {
                     setRooms(data);
+                    setIsLoading(false);
                 }
             });
 
         return () => (unmounted = true);
-    }, [currentUser.uid]);
+    }, [loggedUser.uid]);
 
     const createRoom = (event) => {
-        const { name } = event.target.elements;
-
         event.preventDefault();
+
+        const { name } = event.target.elements;
+        const newRoom = {
+            name: name.value,
+            user_id: loggedUser.uid,
+            timestamp: Firestore.FieldValue.serverTimestamp(),
+            players: {},
+        };
 
         Firestore()
             .collection('rooms')
-            .add({
-                name: name.value,
-                user_id: currentUser.uid,
-                timestamp: Firestore.FieldValue.serverTimestamp(),
-                players: {},
-            })
+            .add(newRoom)
             .then(() => {
                 name.value = null;
             });
     };
 
-    const deleteRoom = (id) => {
-        Firestore().collection('rooms').doc(id).delete();
-    };
+    const deleteRoom = (event, id) => {
+        event.preventDefault();
 
-    const goTo = (path) => {
-        history.push(path);
+        Firestore().collection('rooms').doc(id).delete();
     };
 
     return (
         <Container>
-            <Box
-                display={{ sm: 'flex' }}
-                marginTop={4}
-                marginBottom={2}
-                justifyContent="space-between"
-            >
-                <Typography variant="h4">Rooms</Typography>
-                <Box marginTop={{ xs: 1, md: 0 }}>
-                    <form onSubmit={createRoom}>
-                        <FormGroup row>
-                            <TextField
-                                name="name"
-                                label="New room"
-                                variant="outlined"
-                                required
-                                size="small"
-                                className={classes.formCreate}
-                            />
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                required
-                            >
-                                Create
-                            </Button>
-                        </FormGroup>
-                    </form>
-                </Box>
-            </Box>
-            <Divider />
-            <Box marginTop={2}>
-                <Grid container>
-                    <Grid item xs={12}>
-                        <List component="nav">
-                            {rooms.map((room) => (
-                                <ListItem
-                                    divider
-                                    key={room.id}
-                                    onClick={() => goTo(`room/${room.id}`)}
-                                    button
-                                >
-                                    <ListItemAvatar>
-                                        <Avatar variant="rounded">
-                                            <DashboardRounded />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText primary={room.name} />
-                                    <ListItemSecondaryAction>
-                                        <IconButton
-                                            onClick={() => deleteRoom(room.id)}
-                                            edge="end"
+            <PageHeader>
+                <div>
+                    <PageTitle>Rooms</PageTitle>
+                </div>
+                <PageHeaderForm onSubmit={createRoom}>
+                    <Input
+                        type="text"
+                        name="name"
+                        placeholder="New room"
+                        required
+                    />
+                    <Button color="yellow" type="submit">
+                        Add
+                    </Button>
+                </PageHeaderForm>
+            </PageHeader>
+            <PageContent>
+                {isLoading ? (
+                    <Loading />
+                ) : (
+                    <RoomList>
+                        {rooms.map((room) => (
+                            <RoomItem key={room.id}>
+                                <Link to={`room/${room.id}`}>
+                                    <RoomItemContent>
+                                        <RoomItemAvatar title={room.name}>
+                                            <span>
+                                                {room.name[0].toUpperCase()}
+                                            </span>
+                                        </RoomItemAvatar>
+                                        <RoomItemText title={room.name}>
+                                            {room.name}
+                                        </RoomItemText>
+                                        <RemoveItem
+                                            onClick={(event) =>
+                                                deleteRoom(event, room.id)
+                                            }
                                         >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Grid>
-                </Grid>
-            </Box>
+                                            <AiTwotoneDelete />
+                                        </RemoveItem>
+                                    </RoomItemContent>
+                                </Link>
+                            </RoomItem>
+                        ))}
+                    </RoomList>
+                )}
+            </PageContent>
         </Container>
     );
 };
