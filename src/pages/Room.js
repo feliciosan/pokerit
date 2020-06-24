@@ -14,7 +14,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { AiOutlineCheck } from 'react-icons/ai';
 import { AiFillCopy } from 'react-icons/ai';
 import { Container, PageHeader, PageTitle } from '../styles/components';
-import { Button } from '../styles/form';
+import { Button } from '../styles/forms';
 
 const PageHeaderActions = styled.div`
     display: flex;

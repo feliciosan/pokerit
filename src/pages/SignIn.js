@@ -11,7 +11,7 @@ import {
     FormTitle,
     FormGroup,
     FormAlert,
-} from '../styles/form';
+} from '../styles/forms';
 import { Loading } from '../styles/components';
 
 const SignIn = () => {
@@ -62,7 +62,7 @@ const SignIn = () => {
                 />
             </FormGroup>
             <FormGroup>
-                <Link to="/recorver">
+                <Link to="/recover-password">
                     <FeaturedText>Forgot password?</FeaturedText>
                 </Link>
             </FormGroup>

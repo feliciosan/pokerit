@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { Button, Input, FormTitle, FormGroup } from '../styles/form';
+import { Button, Input, FormTitle, FormGroup } from '../styles/forms';
 import { Loading } from '../styles/components';
 
 const FormJoinRoom = styled.form`

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { Button } from '../styles/form';
+import { Button } from '../styles/forms';
 
 const DisableUserButton = styled.div`
     width: 115px;

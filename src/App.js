@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/Auth';
 
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import RecoverPassoword from './pages/RecoverPassoword';
 import Home from './pages/Home';
 import Room from './pages/Room';
 import NotFound from './pages/NotFound';
@@ -31,6 +32,11 @@ const App = ({ location }) => {
                         <Route exat path="/room/:id" component={Room} />
                         <Route exact path="/signup" component={SignUp} />
                         <Route exact path="/signin" component={SignIn} />
+                        <Route
+                            exact
+                            path="/recover-password"
+                            component={RecoverPassoword}
+                        />
                         <Route component={NotFound} />
                     </Switch>
                 </>

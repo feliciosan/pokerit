@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { Firestore } from '../services/firebase';
-import { Select } from '../styles/form';
+import { Select } from '../styles/forms';
 
 const CardList = styled.div`
     display: flex;

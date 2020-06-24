@@ -13,31 +13,29 @@ import {
 } from '../styles/forms';
 import { Loading } from '../styles/components';
 
-const SignUp = () => {
+const SignIn = () => {
     const { loggedUser } = useContext(AuthContext);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
-    const handleSignUp = (event) => {
+    const handleRecoverPassword = (event) => {
+        const { email } = event.target.elements;
+
         event.preventDefault();
-
-        const { email, password, confirmPassword } = event.target.elements;
-
-        if (password !== confirmPassword) {
-            setError({
-                message: "The passwords you entered don't match",
-            });
-            return;
-        }
-
         setIsLoading(true);
 
-        Auth.createUserWithEmailAndPassword(email.value, password.value).catch(
-            (error) => {
-                setError(error);
+        Auth.sendPasswordResetEmail(email.value)
+            .then(() => {
                 setIsLoading(false);
-            }
-        );
+                setSuccess({
+                    message: 'Recover link sent to your e-mail.',
+                });
+            })
+            .catch((error) => {
+                setIsLoading(false);
+                setError(error);
+            });
     };
 
     if (loggedUser) {
@@ -45,42 +43,25 @@ const SignUp = () => {
     }
 
     return (
-        <FormSignInUp onSubmit={handleSignUp}>
+        <FormSignInUp onSubmit={handleRecoverPassword}>
             {error && <FormAlert type="danger">{error.message}</FormAlert>}
 
-            {isLoading ? <Loading /> : <FormTitle>Sign Up</FormTitle>}
+            {success && <FormAlert>{success.message}</FormAlert>}
+
+            {isLoading ? <Loading /> : <FormTitle>Recover Password</FormTitle>}
             <FormGroup>
                 <Input
                     type="email"
                     name="email"
                     placeholder="Your e-mail"
-                    disabled={isLoading}
-                    required
-                />
-            </FormGroup>
-            <FormGroup>
-                <Input
-                    type="password"
-                    name="password"
-                    autocomplete="off"
-                    placeholder="Password"
-                    disabled={isLoading}
-                    required
-                />
-            </FormGroup>
-            <FormGroup>
-                <Input
-                    type="password"
-                    name="confirmPassword"
-                    autocomplete="off"
-                    placeholder="Confirm password"
+                    autoComplete="off"
                     disabled={isLoading}
                     required
                 />
             </FormGroup>
             <FormGroup>
                 <Button type="submit" disabled={isLoading}>
-                    Go
+                    Send
                 </Button>
             </FormGroup>
             <Link to="/signin">
@@ -92,4 +73,4 @@ const SignUp = () => {
     );
 };
 
-export default withRouter(SignUp);
+export default withRouter(SignIn);

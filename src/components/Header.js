@@ -6,13 +6,13 @@ import { Link, useHistory } from 'react-router-dom';
 import { Container } from '../styles/components';
 import { AuthContext } from '../contexts/Auth';
 import { Auth } from '../services/firebase';
-import { Button } from '../styles/form';
+import { Button } from '../styles/forms';
 
 const HeaderBar = styled.div`
     width: 100%;
     border-bottom: 4px solid;
     border-color: ${(props) =>
-        ['signin', 'signup'].includes(props.currentRoute)
+        ['signin', 'signup', 'recover-password'].includes(props.currentRoute)
             ? 'transparent'
             : '#d4bd1b'};
     background: ${(props) =>

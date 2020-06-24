@@ -11,7 +11,7 @@ import {
     PageTitle,
     Loading,
 } from '../styles/components';
-import { Input, Button } from '../styles/form';
+import { Input, Button } from '../styles/forms';
 
 const PageHeaderForm = styled.form`
     display: flex;
