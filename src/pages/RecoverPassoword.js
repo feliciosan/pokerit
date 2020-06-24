@@ -11,7 +11,7 @@ import {
     FormGroup,
     FormAlert,
 } from '../styles/forms';
-import { Loading } from '../styles/components';
+import { Container, Loading } from '../styles/components';
 
 const SignIn = () => {
     const { loggedUser } = useContext(AuthContext);
@@ -43,33 +43,38 @@ const SignIn = () => {
     }
 
     return (
-        <FormSignInUp onSubmit={handleRecoverPassword}>
-            {error && <FormAlert type="danger">{error.message}</FormAlert>}
+        <Container>
+            <FormSignInUp onSubmit={handleRecoverPassword}>
+                {error && <FormAlert type="danger">{error.message}</FormAlert>}
+                {success && <FormAlert>{success.message}</FormAlert>}
+                {isLoading ? (
+                    <Loading />
+                ) : (
+                    <FormTitle>Recover Password</FormTitle>
+                )}
 
-            {success && <FormAlert>{success.message}</FormAlert>}
-
-            {isLoading ? <Loading /> : <FormTitle>Recover Password</FormTitle>}
-            <FormGroup>
-                <Input
-                    type="email"
-                    name="email"
-                    placeholder="Your e-mail"
-                    autoComplete="off"
-                    disabled={isLoading}
-                    required
-                />
-            </FormGroup>
-            <FormGroup>
-                <Button type="submit" disabled={isLoading}>
-                    Send
-                </Button>
-            </FormGroup>
-            <Link to="/signin">
-                <Button type="button" color="purple">
-                    Sign In
-                </Button>
-            </Link>
-        </FormSignInUp>
+                <FormGroup>
+                    <Input
+                        type="email"
+                        name="email"
+                        placeholder="Your e-mail"
+                        autoComplete="off"
+                        disabled={isLoading}
+                        required
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <Button type="submit" disabled={isLoading}>
+                        Send
+                    </Button>
+                </FormGroup>
+                <Link to="/signin">
+                    <Button type="button" color="purple">
+                        Sign In
+                    </Button>
+                </Link>
+            </FormSignInUp>
+        </Container>
     );
 };
 

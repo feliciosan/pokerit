@@ -11,7 +11,7 @@ import {
     FormGroup,
     FormAlert,
 } from '../styles/forms';
-import { Loading } from '../styles/components';
+import { Container, Loading } from '../styles/components';
 
 const SignUp = () => {
     const { loggedUser } = useContext(AuthContext);
@@ -45,50 +45,52 @@ const SignUp = () => {
     }
 
     return (
-        <FormSignInUp onSubmit={handleSignUp}>
-            {error && <FormAlert type="danger">{error.message}</FormAlert>}
+        <Container>
+            <FormSignInUp onSubmit={handleSignUp}>
+                {error && <FormAlert type="danger">{error.message}</FormAlert>}
+                {isLoading ? <Loading /> : <FormTitle>Sign Up</FormTitle>}
 
-            {isLoading ? <Loading /> : <FormTitle>Sign Up</FormTitle>}
-            <FormGroup>
-                <Input
-                    type="email"
-                    name="email"
-                    placeholder="Your e-mail"
-                    disabled={isLoading}
-                    required
-                />
-            </FormGroup>
-            <FormGroup>
-                <Input
-                    type="password"
-                    name="password"
-                    autocomplete="off"
-                    placeholder="Password"
-                    disabled={isLoading}
-                    required
-                />
-            </FormGroup>
-            <FormGroup>
-                <Input
-                    type="password"
-                    name="confirmPassword"
-                    autocomplete="off"
-                    placeholder="Confirm password"
-                    disabled={isLoading}
-                    required
-                />
-            </FormGroup>
-            <FormGroup>
-                <Button type="submit" disabled={isLoading}>
-                    Go
-                </Button>
-            </FormGroup>
-            <Link to="/signin">
-                <Button type="button" color="purple">
-                    Sign In
-                </Button>
-            </Link>
-        </FormSignInUp>
+                <FormGroup>
+                    <Input
+                        type="email"
+                        name="email"
+                        placeholder="Your e-mail"
+                        disabled={isLoading}
+                        required
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <Input
+                        type="password"
+                        name="password"
+                        autocomplete="off"
+                        placeholder="Password"
+                        disabled={isLoading}
+                        required
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <Input
+                        type="password"
+                        name="confirmPassword"
+                        autocomplete="off"
+                        placeholder="Confirm password"
+                        disabled={isLoading}
+                        required
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <Button type="submit" disabled={isLoading}>
+                        Go
+                    </Button>
+                </FormGroup>
+                <Link to="/signin">
+                    <Button type="button" color="purple">
+                        Sign In
+                    </Button>
+                </Link>
+            </FormSignInUp>
+        </Container>
     );
 };
 

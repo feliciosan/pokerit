@@ -23,6 +23,11 @@ const PageHeaderActions = styled.div`
         flex: 1;
         margin-left: 15px;
     }
+
+    @media (max-width: 600px) {
+        width: 100%;
+        margin-top: 5px;
+    }
 `;
 
 const IconButton = styled.div`
@@ -43,6 +48,10 @@ const IconButton = styled.div`
 const PokerBox = styled.div`
     display: flex;
     margin-top: 25px;
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+    }
 `;
 
 const PokerPanel = styled.div`
@@ -52,6 +61,11 @@ const PokerPanel = styled.div`
     background: #ececec;
     border-radius: 4px;
     padding-top: 20px;
+
+    @media (max-width: 600px) {
+        padding: 15px 7.5px;
+        flex: 1;
+    }
 `;
 
 const PokerList = styled(PokerPanel)`
@@ -60,6 +74,14 @@ const PokerList = styled(PokerPanel)`
     border-radius: 4px;
     padding: 20px;
     flex: 1.2;
+
+    @media (max-width: 600px) {
+        margin-left: 0;
+        margin-top: 20px;
+        flex: 1;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
 `;
 
 const ActiveButton = styled(Button)`
@@ -224,30 +246,34 @@ const Room = () => {
                         <div>
                             <PageTitle>{room.name}</PageTitle>
                         </div>
-                        {loggedUser && loggedUser.uid === room.user_id && (
-                            <PageHeaderActions>
-                                <CopyToClipboard
-                                    text={window.location.href}
-                                    onCopy={() => setCopied(true)}
-                                >
-                                    <IconButton
-                                        title="Copy room link!"
-                                        copied={copied}
+                        {playerId &&
+                            loggedUser &&
+                            loggedUser.uid === room.user_id && (
+                                <PageHeaderActions>
+                                    <CopyToClipboard
+                                        text={window.location.href}
+                                        onCopy={() => setCopied(true)}
                                     >
-                                        <AiFillCopy />
-                                    </IconButton>
-                                </CopyToClipboard>
-                                <Button
-                                    onClick={() =>
-                                        showAllCards(!room.show_result)
-                                    }
-                                    color={room.show_result ? 'purple' : ''}
-                                >
-                                    {!room.show_result ? 'Show All' : 'Hide'}
-                                </Button>
-                                <Button onClick={resetCards}>Reset</Button>
-                            </PageHeaderActions>
-                        )}
+                                        <IconButton
+                                            title="Copy room link!"
+                                            copied={copied}
+                                        >
+                                            <AiFillCopy />
+                                        </IconButton>
+                                    </CopyToClipboard>
+                                    <Button
+                                        onClick={() =>
+                                            showAllCards(!room.show_result)
+                                        }
+                                        color={room.show_result ? 'purple' : ''}
+                                    >
+                                        {!room.show_result
+                                            ? 'Show All'
+                                            : 'Hide'}
+                                    </Button>
+                                    <Button onClick={resetCards}>Reset</Button>
+                                </PageHeaderActions>
+                            )}
                     </PageHeader>
                     {!playerId ? (
                         <FormPlayer

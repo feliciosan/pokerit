@@ -12,7 +12,7 @@ import {
     FormGroup,
     FormAlert,
 } from '../styles/forms';
-import { Loading } from '../styles/components';
+import { Container, Loading } from '../styles/components';
 
 const SignIn = () => {
     const { loggedUser } = useContext(AuthContext);
@@ -38,45 +38,47 @@ const SignIn = () => {
     }
 
     return (
-        <FormSignInUp onSubmit={handleSignIn}>
-            {error && <FormAlert type="danger">{error.message}</FormAlert>}
+        <Container>
+            <FormSignInUp onSubmit={handleSignIn}>
+                {error && <FormAlert type="danger">{error.message}</FormAlert>}
+                {isLoading ? <Loading /> : <FormTitle>Sign In</FormTitle>}
 
-            {isLoading ? <Loading /> : <FormTitle>Sign In</FormTitle>}
-            <FormGroup>
-                <Input
-                    type="email"
-                    name="email"
-                    placeholder="Your e-mail"
-                    disabled={isLoading}
-                    required
-                />
-            </FormGroup>
-            <FormGroup>
-                <Input
-                    type="password"
-                    name="password"
-                    autocomplete="off"
-                    placeholder="Password"
-                    disabled={isLoading}
-                    required
-                />
-            </FormGroup>
-            <FormGroup>
-                <Link to="/recover-password">
-                    <FeaturedText>Forgot password?</FeaturedText>
+                <FormGroup>
+                    <Input
+                        type="email"
+                        name="email"
+                        placeholder="Your e-mail"
+                        disabled={isLoading}
+                        required
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <Input
+                        type="password"
+                        name="password"
+                        autocomplete="off"
+                        placeholder="Password"
+                        disabled={isLoading}
+                        required
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <Link to="/recover-password">
+                        <FeaturedText>Forgot password?</FeaturedText>
+                    </Link>
+                </FormGroup>
+                <FormGroup>
+                    <Button type="submit" disabled={isLoading}>
+                        Go
+                    </Button>
+                </FormGroup>
+                <Link to="/signup">
+                    <Button type="button" color="purple">
+                        Sign Up
+                    </Button>
                 </Link>
-            </FormGroup>
-            <FormGroup>
-                <Button type="submit" disabled={isLoading}>
-                    Go
-                </Button>
-            </FormGroup>
-            <Link to="/signup">
-                <Button type="button" color="purple">
-                    Sign Up
-                </Button>
-            </Link>
-        </FormSignInUp>
+            </FormSignInUp>
+        </Container>
     );
 };
 

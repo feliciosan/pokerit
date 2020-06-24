@@ -17,6 +17,11 @@ const FormJoinRoom = styled.form`
     ${Loading} {
         margin-bottom: 30px;
     }
+
+    @media (max-width: 600px) {
+        padding: 20px;
+        margin-top: 25px;
+    }
 `;
 
 const FormPlayer = ({ submit, formIsLoading }) => {

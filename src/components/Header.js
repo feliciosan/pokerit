@@ -86,7 +86,7 @@ const Header = ({ currentRoute }) => {
                                 </li>
                                 <li>
                                     <Button
-                                        color="purple"
+                                        color="lightPurple"
                                         small
                                         onClick={handleSignOut}
                                     >

@@ -14,6 +14,10 @@ const CardItem = styled.div`
     flex: 1;
     padding: 0 10px 20px;
     display: flex;
+
+    @media (max-width: 600px) {
+        padding: 0 7.5px 15px;
+    }
 `;
 
 const CardButton = styled.div`
@@ -44,6 +48,11 @@ const CardButton = styled.div`
     :hover {
         opacity: 0.8;
     }
+
+    @media (max-width: 600px) {
+        width: 60px;
+        height: 90px;
+    }
 `;
 
 const SelectBox = styled.div`
@@ -52,6 +61,11 @@ const SelectBox = styled.div`
     margin-bottom: 20px;
     ${Select} {
         background: #f2f2f2;
+    }
+
+    @media (max-width: 600px) {
+        margin-bottom: 0;
+        padding: 0 7.5px;
     }
 `;
 

@@ -14,6 +14,11 @@ export const FormSignInUp = styled.form`
     ${Loading} {
         margin-bottom: 30px;
     }
+
+    @media (max-width: 600px) {
+        padding: 20px;
+        margin-top: 25px;
+    }
 `;
 
 export const FormTitle = styled.strong`
@@ -63,6 +68,7 @@ export const Select = styled.select`
 const getPropColors = (color) => {
     const colors = {
         purple: '#6d37af',
+        lightPurple: '#7741b9',
         yellow: '#d4bd1b',
     };
 

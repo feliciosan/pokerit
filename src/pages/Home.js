@@ -23,6 +23,11 @@ const PageHeaderForm = styled.form`
         flex: 0.5;
         margin-left: 15px;
     }
+
+    @media (max-width: 600px) {
+        width: 100%;
+        margin-top: 5px;
+    }
 `;
 
 const PageContent = styled.div`
@@ -30,6 +35,9 @@ const PageContent = styled.div`
     background: #ececec;
     border-radius: 4px;
     margin-top: 25px;
+    @media (max-width: 600px) {
+        padding: 7.5px 7.5px;
+    }
 `;
 
 const RoomList = styled.div`
@@ -41,6 +49,11 @@ const RoomItem = styled.div`
     width: 20%;
     padding: 15px;
     float: left;
+
+    @media (max-width: 600px) {
+        width: 50%;
+        padding: 7.5px;
+    }
 `;
 
 const RoomItemContent = styled.div`

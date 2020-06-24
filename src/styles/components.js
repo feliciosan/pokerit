@@ -15,10 +15,21 @@ export const PageHeader = styled.div`
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #e2e2e2;
+
+    @media (max-width: 600px) {
+        align-items: baseline;
+        flex-direction: column;
+        padding: 20px 0;
+        height: auto;
+    }
 `;
 
 export const PageTitle = styled.h1`
     font-size: 35px;
+
+    @media (max-width: 600px) {
+        font-size: 25px;
+    }
 `;
 
 const LdsDualRing = keyframes`
