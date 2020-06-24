@@ -16,7 +16,7 @@ const HeaderBar = styled.div`
             ? 'transparent'
             : '#d4bd1b'};
     background: ${(props) =>
-        ['signin', 'signup'].includes(props.currentRoute)
+        ['signin', 'signup', 'recover-password'].includes(props.currentRoute)
             ? 'transparent'
             : '#6d37af'};
 `;
