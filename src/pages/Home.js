@@ -56,6 +56,19 @@ const RoomItem = styled.div`
     }
 `;
 
+const RemoveItem = styled.div`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #f2f2f2;
+    font-size: 22px;
+    display: flex;
+    display: none;
+    :hover {
+        color: #d4bd1b;
+    }
+`;
+
 const RoomItemContent = styled.div`
     padding: 30px 25px;
     background: linear-gradient(110deg, #6d37af 50%, #7741b9 50%);
@@ -67,6 +80,9 @@ const RoomItemContent = styled.div`
     border-bottom: 4px solid #d4bd1b;
     :hover {
         opacity: 0.9;
+        ${RemoveItem} {
+            display: block;
+        }
     }
 `;
 
@@ -90,18 +106,6 @@ const RoomItemText = styled.p`
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 180px;
-`;
-
-const RemoveItem = styled.div`
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: #f2f2f2;
-    font-size: 22px;
-    display: flex;
-    :hover {
-        color: #d4bd1b;
-    }
 `;
 
 const Home = () => {
