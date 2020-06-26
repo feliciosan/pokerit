@@ -4,6 +4,9 @@ import styled from 'styled-components';
 
 import { Firestore } from '../services/firebase';
 import { Select } from '../styles/forms';
+import { IoMdInfinite } from 'react-icons/io';
+import { GiCoffeeCup } from 'react-icons/gi';
+import { BsQuestion } from 'react-icons/bs';
 
 const CardList = styled.div`
     display: flex;
@@ -15,6 +18,11 @@ const CardItem = styled.div`
     padding: 0 10px 20px;
     display: flex;
 
+    svg {
+        color: #f2f2f2;
+        font-size: 40px;
+    }
+
     @media (max-width: 600px) {
         padding: 0 7.5px 15px;
     }
@@ -22,8 +30,8 @@ const CardItem = styled.div`
 
 const CardButton = styled.div`
     flex: 1;
-    width: 80px;
-    height: 130px;
+    width: 75px;
+    height: 110px;
     background: linear-gradient(110deg, #6d37af 50%, #7741b9 50%);
     border-bottom: 3px solid #d4bd1b;
     border-radius: 4px;
@@ -72,7 +80,7 @@ const SelectBox = styled.div`
 const getTechnique = (action) => {
     const technique = {
         PLANNING_POKER: [0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100],
-        FIBONACCI: [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144],
+        FIBONACCI: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144],
         SEQUENTIAL: getSequentialRange(),
     };
 
@@ -93,6 +101,7 @@ const getSequentialRange = (min = 1, max = 20, interval = 1) => {
 const PokerCards = ({ updateCard, room, playerId }) => {
     const [cards, setCards] = useState([]);
     const [isAdmin] = useState(room.user_id === playerId.split('_')[0]);
+    const [currentTechnique, setCurrentTechnique] = useState('');
 
     const handleChange = (event, roomId) => {
         const technique = event.target.value;
@@ -104,6 +113,7 @@ const PokerCards = ({ updateCard, room, playerId }) => {
     };
 
     useEffect(() => {
+        setCurrentTechnique(room.technique || 'PLANNING_POKER');
         setCards(getTechnique(room.technique));
     }, [room.technique]);
 
@@ -117,7 +127,30 @@ const PokerCards = ({ updateCard, room, playerId }) => {
                         </CardButton>
                     </CardItem>
                 ))}
+
+                {currentTechnique === 'PLANNING_POKER' && (
+                    <>
+                        <CardItem key="INFINITY">
+                            <CardButton onClick={() => updateCard('INFINITY')}>
+                                <IoMdInfinite />
+                            </CardButton>
+                        </CardItem>
+                        <CardItem key="QUESTION">
+                            <CardButton onClick={() => updateCard('QUESTION')}>
+                                <BsQuestion />
+                            </CardButton>
+                        </CardItem>
+                        <CardItem key="COFFEE_CUP">
+                            <CardButton
+                                onClick={() => updateCard('COFFEE_CUP')}
+                            >
+                                <GiCoffeeCup />
+                            </CardButton>
+                        </CardItem>
+                    </>
+                )}
             </CardList>
+
             {isAdmin && (
                 <SelectBox>
                     <Select

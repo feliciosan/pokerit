@@ -265,13 +265,19 @@ const Room = () => {
                                         onClick={() =>
                                             showAllCards(!room.show_result)
                                         }
-                                        color={room.show_result ? 'purple' : ''}
+                                        color={
+                                            room.show_result
+                                                ? 'yellow'
+                                                : 'purple'
+                                        }
                                     >
                                         {!room.show_result
                                             ? 'Show All'
                                             : 'Hide'}
                                     </Button>
-                                    <Button onClick={resetCards}>Reset</Button>
+                                    <Button onClick={resetCards} color="purple">
+                                        Reset
+                                    </Button>
                                 </PageHeaderActions>
                             )}
                     </PageHeader>

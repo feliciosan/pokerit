@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { IoMdInfinite } from 'react-icons/io';
+import { GiCoffeeCup } from 'react-icons/gi';
+import { BsQuestion } from 'react-icons/bs';
 
 import { Button } from '../styles/forms';
 
@@ -35,6 +38,7 @@ const ItemName = styled.p`
     flex: 1;
     font-size: 20px;
     margin-bottom: -10px;
+    color: ${(props) => props.me && '#68b968'};
 `;
 
 const ItemResult = styled.div`
@@ -47,15 +51,34 @@ const ItemResult = styled.div`
     justify-content: center;
     border-radius: 4px;
     color: #fefefe;
+    svg {
+        font-size: 20px;
+    }
 `;
+
+const getParsedContent = (card) => {
+    if (card === 'INFINITY') {
+        return <IoMdInfinite />;
+    }
+
+    if (card === 'QUESTION') {
+        return <BsQuestion />;
+    }
+
+    if (card === 'COFFEE_CUP') {
+        return <GiCoffeeCup />;
+    }
+
+    return card;
+};
 
 const PokerPlayers = ({ room, playerId, updateActive }) => {
     const [isAdmin] = useState(room.user_id === playerId.split('_')[0]);
 
     const getResult = (_room, _playerId, key) => {
         return _room.show_result || _playerId === key
-            ? _room.players[key].card
-            : '?';
+            ? getParsedContent(_room.players[key].card)
+            : '-';
     };
 
     return (
@@ -65,7 +88,9 @@ const PokerPlayers = ({ room, playerId, updateActive }) => {
                 .filter((key) => room.players[key].active)
                 .map((key) => (
                     <ListItem key={key}>
-                        <ItemName>{room.players[key].name}</ItemName>
+                        <ItemName me={playerId === key}>
+                            {room.players[key].name}
+                        </ItemName>
                         <InfoItem>
                             {isAdmin && (
                                 <DisableUserButton>
@@ -79,7 +104,7 @@ const PokerPlayers = ({ room, playerId, updateActive }) => {
                                 </DisableUserButton>
                             )}
                             {room.players[key].card === null ? (
-                                <ItemResult disabled>?</ItemResult>
+                                <ItemResult disabled>-</ItemResult>
                             ) : (
                                 <ItemResult showResult={room.show_result}>
                                     {getResult(room, playerId, key)}

@@ -31,12 +31,12 @@ const PageHeaderForm = styled.form`
 `;
 
 const PageContent = styled.div`
-    padding: 25px 15px;
+    padding: 15px;
     background: #ececec;
     border-radius: 4px;
     margin-top: 25px;
     @media (max-width: 600px) {
-        padding: 7.5px 7.5px;
+        padding: 7.5px;
     }
 `;
 

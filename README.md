@@ -5,8 +5,9 @@ A planning poker web application.
 ## Getting Started
 
 ### Prerequisites
-- [Nodejs](https://nodejs.org/en/)
-- [Firebase App and Firestore database](https://console.firebase.google.com/)
+
+-   [Nodejs](https://nodejs.org/en/)
+-   [Firebase App and Firestore database](https://console.firebase.google.com/)
 
 ### Running app
 
@@ -28,13 +29,9 @@ Builds the app for production to the `build` folder.<br />
 
 ## Built With
 
-* [ReactJs](https://reactjs.org/)
-* [Google Firestore](https://firebase.google.com/docs/firestore)
+-   [ReactJs](https://reactjs.org/)
+-   [Google Firestore](https://firebase.google.com/docs/firestore)
 
 ## Authors
 
-* [Felício Santos](https://github.com/feliciosan)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+-   [Felício Santos](https://github.com/feliciosan)
