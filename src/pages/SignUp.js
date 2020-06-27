@@ -23,7 +23,7 @@ const SignUp = () => {
 
         const { email, password, confirmPassword } = event.target.elements;
 
-        if (password !== confirmPassword) {
+        if (password.value !== confirmPassword.value) {
             setError({
                 message: "The passwords you entered don't match",
             });
