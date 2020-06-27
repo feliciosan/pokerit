@@ -35,6 +35,11 @@ const PageContent = styled.div`
     background: #ececec;
     border-radius: 4px;
     margin-top: 25px;
+    ${Loading} {
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+
     @media (max-width: 600px) {
         padding: 7.5px;
     }
@@ -106,6 +111,15 @@ const RoomItemText = styled.p`
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 180px;
+`;
+
+const NoResults = styled.div`
+    text-align: center;
+    width: 100%;
+    label {
+        display: block;
+        color: #ababab;
+    }
 `;
 
 const Home = () => {
@@ -186,6 +200,12 @@ const Home = () => {
                     <Loading />
                 ) : (
                     <RoomList>
+                        {!rooms.length && (
+                            <NoResults>
+                                <label>No results, create a new room!</label>
+                            </NoResults>
+                        )}
+
                         {rooms.map((room) => (
                             <RoomItem key={room.id}>
                                 <Link to={`room/${room.id}`}>
