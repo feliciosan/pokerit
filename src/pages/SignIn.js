@@ -1,37 +1,66 @@
 import React, { useContext, useState } from 'react';
-import { Auth } from '../services/firebase';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 import { AuthContext } from '../contexts/Auth';
 import { withRouter, Redirect, Link } from 'react-router-dom';
+import useAuth from '../services/useAuth';
 
 import {
     Input,
     Button,
-    FeaturedText,
+    SmallText,
     FormSignInUp,
     FormTitle,
     FormGroup,
     FormAlert,
 } from '../styles/forms';
 import { Container, Loading } from '../styles/components';
+import { FormInputError } from '../components/utils/forms';
+
+const formikSignInInitialValues = {
+    email: '',
+    password: '',
+};
+
+const formikSignInValidateSchema = Yup.object({
+    email: Yup.string().email().required().label('Email'),
+    password: Yup.string().required().min(8).label('Password'),
+});
+
+const handleSignIn = async ({
+    values,
+    setIsLoading,
+    setError,
+    signInWithEmailAndPassword,
+}) => {
+    try {
+        const { email, password } = values;
+
+        setIsLoading(true);
+        await signInWithEmailAndPassword(email, password);
+    } catch (error) {
+        setError(error);
+        setIsLoading(false);
+    }
+};
 
 const SignIn = () => {
     const { loggedUser } = useContext(AuthContext);
+    const { signInWithEmailAndPassword } = useAuth();
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSignIn = (event) => {
-        const { email, password } = event.target.elements;
-
-        event.preventDefault();
-        setIsLoading(true);
-
-        Auth.signInWithEmailAndPassword(email.value, password.value).catch(
-            (error) => {
-                setError(error);
-                setIsLoading(false);
-            }
-        );
-    };
+    const formikSignIn = useFormik({
+        initialValues: formikSignInInitialValues,
+        validationSchema: formikSignInValidateSchema,
+        onSubmit: (values) =>
+            handleSignIn({
+                values,
+                setIsLoading,
+                setError,
+                signInWithEmailAndPassword,
+            }),
+    });
 
     if (loggedUser) {
         return <Redirect to="/" />;
@@ -39,37 +68,48 @@ const SignIn = () => {
 
     return (
         <Container>
-            <FormSignInUp onSubmit={handleSignIn}>
+            <FormSignInUp onSubmit={formikSignIn.handleSubmit}>
                 {error && <FormAlert type="danger">{error.message}</FormAlert>}
                 {isLoading ? <Loading /> : <FormTitle>Sign In</FormTitle>}
 
                 <FormGroup>
                     <Input
-                        type="email"
                         name="email"
+                        type="email"
+                        onChange={formikSignIn.handleChange}
+                        onBlur={formikSignIn.handleBlur}
+                        value={formikSignIn.values.email}
                         placeholder="Your e-mail"
                         disabled={isLoading}
-                        required
+                    />
+                    <FormInputError
+                        touched={formikSignIn.touched.email}
+                        error={formikSignIn.errors.email}
                     />
                 </FormGroup>
                 <FormGroup>
                     <Input
-                        type="password"
                         name="password"
-                        autocomplete="off"
+                        type="password"
+                        onChange={formikSignIn.handleChange}
+                        onBlur={formikSignIn.handleBlur}
+                        value={formikSignIn.values.password}
                         placeholder="Password"
                         disabled={isLoading}
-                        required
+                    />
+                    <FormInputError
+                        touched={formikSignIn.touched.password}
+                        error={formikSignIn.errors.password}
                     />
                 </FormGroup>
                 <FormGroup>
                     <Link to="/recover-password">
-                        <FeaturedText>Forgot password?</FeaturedText>
+                        <SmallText>Forgot password?</SmallText>
                     </Link>
                 </FormGroup>
                 <FormGroup>
                     <Button type="submit" disabled={isLoading}>
-                        Go
+                        Sign In
                     </Button>
                 </FormGroup>
                 <Link to="/signup">

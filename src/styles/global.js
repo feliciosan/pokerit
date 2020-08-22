@@ -17,6 +17,8 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
         background: ${(props) =>
             ['signin', 'signup', 'recover-password'].includes(
                 props.currentRoute

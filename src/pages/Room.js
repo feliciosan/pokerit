@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import PokerCards from '../components/PokerCards';
@@ -7,7 +7,7 @@ import FormPlayer from '../components/FormPlayer';
 import NotFound from './NotFound';
 
 import { useParams } from 'react-router-dom';
-import { Firestore } from '../services/firebase';
+import { Firestore } from '../firebase';
 import { AuthContext } from '../contexts/Auth';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
@@ -212,6 +212,12 @@ const Room = () => {
         });
     };
 
+    const stopPageLoading = useCallback(() => {
+        if (pageLoading) {
+            setPageLoading(false);
+        }
+    }, [pageLoading]);
+
     useEffect(() => {
         const docRef = Firestore().collection('rooms').doc(id);
         let unmounted = false;
@@ -222,17 +228,17 @@ const Room = () => {
                     const currentRoom = { id: doc.id, ...doc.data() };
 
                     setRoom(currentRoom);
-                    setPageLoading(false);
+                    stopPageLoading();
                     return;
                 }
 
                 setDocExists(false);
-                setPageLoading(false);
+                stopPageLoading();
             }
         });
 
         return () => (unmounted = true);
-    }, [id]);
+    }, [id, stopPageLoading]);
 
     if (!docExists) {
         return <NotFound />;

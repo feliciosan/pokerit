@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import { Firestore } from '../services/firebase';
+import { Firestore } from '../firebase';
 import { Select } from '../styles/forms';
 import { IoMdInfinite } from 'react-icons/io';
 import { GiCoffeeCup } from 'react-icons/gi';

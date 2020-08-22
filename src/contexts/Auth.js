@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Auth } from '../services/firebase';
+import { Auth } from '../firebase';
 import { Loading } from '../styles/components';
 
 export const AuthContext = createContext();

@@ -5,7 +5,7 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { Container } from '../styles/components';
 import { AuthContext } from '../contexts/Auth';
-import { Auth } from '../services/firebase';
+import { Auth } from '../firebase';
 import { Button } from '../styles/forms';
 
 const HeaderBar = styled.div`

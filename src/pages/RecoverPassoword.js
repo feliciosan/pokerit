@@ -1,7 +1,9 @@
 import React, { useContext, useState } from 'react';
-import { Auth } from '../services/firebase';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { AuthContext } from '../contexts/Auth';
-import { withRouter, Redirect, Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import useAuth from '../services/useAuth';
 
 import {
     Input,
@@ -12,31 +14,58 @@ import {
     FormAlert,
 } from '../styles/forms';
 import { Container, Loading } from '../styles/components';
+import { FormInputError } from '../components/utils/forms';
+
+const formikRecoverInitialValues = {
+    email: '',
+};
+
+const formikRecoverValidateSchema = Yup.object({
+    email: Yup.string().email().required().label('Email'),
+});
+
+const handleRecoverPassword = async ({
+    values,
+    setIsLoading,
+    setSuccess,
+    setError,
+    sendPasswordResetEmail,
+}) => {
+    try {
+        const { email } = values;
+
+        setIsLoading(true);
+        await sendPasswordResetEmail(email);
+
+        setIsLoading(false);
+        setSuccess({
+            message: 'Recover link sent to your e-mail.',
+        });
+    } catch (error) {
+        setIsLoading(false);
+        setError(error);
+    }
+};
 
 const SignIn = () => {
     const { loggedUser } = useContext(AuthContext);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const { sendPasswordResetEmail } = useAuth();
 
-    const handleRecoverPassword = (event) => {
-        const { email } = event.target.elements;
-
-        event.preventDefault();
-        setIsLoading(true);
-
-        Auth.sendPasswordResetEmail(email.value)
-            .then(() => {
-                setIsLoading(false);
-                setSuccess({
-                    message: 'Recover link sent to your e-mail.',
-                });
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                setError(error);
-            });
-    };
+    const formikRecover = useFormik({
+        initialValues: formikRecoverInitialValues,
+        validationSchema: formikRecoverValidateSchema,
+        onSubmit: (values) =>
+            handleRecoverPassword({
+                values,
+                setIsLoading,
+                setSuccess,
+                setError,
+                sendPasswordResetEmail,
+            }),
+    });
 
     if (loggedUser) {
         return <Redirect to="/" />;
@@ -44,7 +73,7 @@ const SignIn = () => {
 
     return (
         <Container>
-            <FormSignInUp onSubmit={handleRecoverPassword}>
+            <FormSignInUp onSubmit={formikRecover.handleSubmit}>
                 {error && <FormAlert type="danger">{error.message}</FormAlert>}
                 {success && <FormAlert>{success.message}</FormAlert>}
                 {isLoading ? (
@@ -55,12 +84,17 @@ const SignIn = () => {
 
                 <FormGroup>
                     <Input
-                        type="email"
                         name="email"
+                        type="email"
+                        onChange={formikRecover.handleChange}
+                        onBlur={formikRecover.handleBlur}
+                        value={formikRecover.values.email}
                         placeholder="Your e-mail"
-                        autoComplete="off"
                         disabled={isLoading}
-                        required
+                    />
+                    <FormInputError
+                        touched={formikRecover.touched.email}
+                        error={formikRecover.errors.email}
                     />
                 </FormGroup>
                 <FormGroup>
@@ -78,4 +112,4 @@ const SignIn = () => {
     );
 };
 
-export default withRouter(SignIn);
+export default SignIn;

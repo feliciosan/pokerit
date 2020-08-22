@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { Firestore } from '../services/firebase';
+import { Firestore } from '../firebase';
 import { AuthContext } from '../contexts/Auth';
 
 import { AiTwotoneDelete } from 'react-icons/ai';

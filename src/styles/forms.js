@@ -96,9 +96,10 @@ export const Button = styled.button`
 
 export const FormGroup = styled.div`
     margin-bottom: 20px;
+    position: relative;
 `;
 
-export const FeaturedText = styled.span`
+export const SmallText = styled.span`
     font-size: 13px;
 `;
 
