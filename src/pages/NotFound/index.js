@@ -1,5 +1,9 @@
 import React from 'react';
-import { Container, PageHeader, PageTitle } from '../styles/components';
+import {
+    Container,
+    PageHeader,
+    PageTitle,
+} from '../../global/styles/components';
 
 const NotFound = () => {
     return (

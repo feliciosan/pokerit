@@ -1,10 +1,8 @@
 import React, { useContext, useState } from 'react';
-import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import { AuthContext } from '../contexts/Auth';
-import { withRouter, Redirect, Link } from 'react-router-dom';
-import useAuth from '../services/useAuth';
-
+import { AuthContext } from '../../global/contexts/Auth';
+import { Redirect, Link } from 'react-router-dom';
+import useAuth from '../../services/useAuth';
 import {
     Input,
     Button,
@@ -13,53 +11,32 @@ import {
     FormTitle,
     FormGroup,
     FormAlert,
-} from '../styles/forms';
-import { Container, Loading } from '../styles/components';
-import { FormInputError } from '../components/utils/forms';
-
-const formikSignInInitialValues = {
-    email: '',
-    password: '',
-};
-
-const formikSignInValidateSchema = Yup.object({
-    email: Yup.string().email().required().label('Email'),
-    password: Yup.string().required().min(8).label('Password'),
-});
-
-const handleSignIn = async ({
-    values,
-    setIsLoading,
-    setError,
-    signInWithEmailAndPassword,
-}) => {
-    try {
-        const { email, password } = values;
-
-        setIsLoading(true);
-        await signInWithEmailAndPassword(email, password);
-    } catch (error) {
-        setError(error);
-        setIsLoading(false);
-    }
-};
+    Container,
+    Loading,
+} from '../../global/styles/components';
+import { FormInputError } from '../../utils/FormInputError/';
+import schema from './schemaValidator';
 
 const SignIn = () => {
     const { loggedUser } = useContext(AuthContext);
-    const { signInWithEmailAndPassword } = useAuth();
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const formikSignIn = useFormik({
-        initialValues: formikSignInInitialValues,
-        validationSchema: formikSignInValidateSchema,
-        onSubmit: (values) =>
-            handleSignIn({
-                values,
-                setIsLoading,
-                setError,
-                signInWithEmailAndPassword,
-            }),
+        initialValues: schema.signIn.initialValues,
+        validationSchema: schema.signIn.validator,
+        validateOnMount: true,
+        onSubmit: async (values) => {
+            try {
+                const { email, password } = values;
+
+                setIsLoading(true);
+                await useAuth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                setError(error);
+                setIsLoading(false);
+            }
+        },
     });
 
     if (loggedUser) {
@@ -108,7 +85,10 @@ const SignIn = () => {
                     </Link>
                 </FormGroup>
                 <FormGroup>
-                    <Button type="submit" disabled={isLoading}>
+                    <Button
+                        type="submit"
+                        disabled={!formikSignIn.isValid || isLoading}
+                    >
                         Sign In
                     </Button>
                 </FormGroup>
@@ -122,4 +102,4 @@ const SignIn = () => {
     );
 };
 
-export default withRouter(SignIn);
+export default SignIn;

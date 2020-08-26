@@ -1,10 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { AuthContext } from '../contexts/Auth';
+import { AuthContext } from '../../global/contexts/Auth';
 import { Link, Redirect } from 'react-router-dom';
-import useAuth from '../services/useAuth';
-
 import {
     Input,
     Button,
@@ -12,59 +9,39 @@ import {
     FormTitle,
     FormGroup,
     FormAlert,
-} from '../styles/forms';
-import { Container, Loading } from '../styles/components';
-import { FormInputError } from '../components/utils/forms';
+    Container,
+    Loading,
+} from '../../global/styles/components';
+import { FormInputError } from '../../utils/FormInputError/';
+import schema from './schemaValidator';
+import useAuth from '../../services/useAuth';
 
-const formikRecoverInitialValues = {
-    email: '',
-};
-
-const formikRecoverValidateSchema = Yup.object({
-    email: Yup.string().email().required().label('Email'),
-});
-
-const handleRecoverPassword = async ({
-    values,
-    setIsLoading,
-    setSuccess,
-    setError,
-    sendPasswordResetEmail,
-}) => {
-    try {
-        const { email } = values;
-
-        setIsLoading(true);
-        await sendPasswordResetEmail(email);
-
-        setIsLoading(false);
-        setSuccess({
-            message: 'Recover link sent to your e-mail.',
-        });
-    } catch (error) {
-        setIsLoading(false);
-        setError(error);
-    }
-};
-
-const SignIn = () => {
+const RecoverPassword = () => {
     const { loggedUser } = useContext(AuthContext);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const { sendPasswordResetEmail } = useAuth();
 
     const formikRecover = useFormik({
-        initialValues: formikRecoverInitialValues,
-        validationSchema: formikRecoverValidateSchema,
-        onSubmit: (values) =>
-            handleRecoverPassword({
-                values,
-                setIsLoading,
-                setSuccess,
-                setError,
-                sendPasswordResetEmail,
-            }),
+        initialValues: schema.recoverPassword.initialValues,
+        validationSchema: schema.recoverPassword.validator,
+        validateOnMount: true,
+        onSubmit: async (values) => {
+            try {
+                const { email } = values;
+
+                setIsLoading(true);
+                await useAuth.sendPasswordResetEmail(email);
+
+                setIsLoading(false);
+                setSuccess({
+                    message: 'Recover link sent to your e-mail.',
+                });
+            } catch (error) {
+                setIsLoading(false);
+                setError(error);
+            }
+        },
     });
 
     if (loggedUser) {
@@ -98,7 +75,10 @@ const SignIn = () => {
                     />
                 </FormGroup>
                 <FormGroup>
-                    <Button type="submit" disabled={isLoading}>
+                    <Button
+                        type="submit"
+                        disabled={!formikRecover.isValid || isLoading}
+                    >
                         Send
                     </Button>
                 </FormGroup>
@@ -112,4 +92,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default RecoverPassword;

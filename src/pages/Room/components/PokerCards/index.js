@@ -1,81 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-
-import { Firestore } from '../firebase';
-import { Select } from '../styles/forms';
+import React, { useState, useEffect, useContext } from 'react';
+import useRoom from '../../../../services/useRoom';
+import { Select } from '../../../../global/styles/components';
 import { IoMdInfinite } from 'react-icons/io';
 import { GiCoffeeCup } from 'react-icons/gi';
 import { BsQuestion } from 'react-icons/bs';
-
-const CardList = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-`;
-
-const CardItem = styled.div`
-    flex: 1;
-    padding: 0 10px 20px;
-    display: flex;
-
-    svg {
-        color: #f2f2f2;
-        font-size: 40px;
-    }
-
-    @media (max-width: 600px) {
-        padding: 0 7.5px 15px;
-    }
-`;
-
-const CardButton = styled.div`
-    flex: 1;
-    width: 75px;
-    height: 110px;
-    background: linear-gradient(110deg, #6d37af 50%, #7741b9 50%);
-    border-bottom: 3px solid #d4bd1b;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: pointer;
-    strong {
-        font-size: 26px;
-        font-weight: 600;
-        color: #f2f2f2;
-    }
-    :after {
-        position: absolute;
-        content: '';
-        width: calc(100% - 15px);
-        height: calc(100% - 15px);
-        border: 1px solid #f2f2f2;
-        border-radius: 4px;
-    }
-    :hover {
-        opacity: 0.8;
-    }
-
-    @media (max-width: 600px) {
-        width: 60px;
-        height: 90px;
-    }
-`;
-
-const SelectBox = styled.div`
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-bottom: 20px;
-    ${Select} {
-        background: #f2f2f2;
-    }
-
-    @media (max-width: 600px) {
-        margin-bottom: 0;
-        padding: 0 7.5px;
-    }
-`;
+import { CardList, CardItem, CardButton, SelectBox } from './styles';
+import { RoomContext } from '../../context';
 
 const getTechnique = (action) => {
     const technique = {
@@ -84,37 +14,54 @@ const getTechnique = (action) => {
         SEQUENTIAL: getSequentialRange(),
     };
 
-    return technique[action] || technique['PLANNING_POKER'];
+    return technique[action];
 };
 
-const getSequentialRange = (min = 1, max = 20, interval = 1) => {
+const getSequentialRange = (start = 1, end = 20, interval = 1) => {
     const items = [];
 
-    while (min <= max) {
-        items.push(min);
-        min += interval;
+    while (start <= end) {
+        items.push(start);
+        start += interval;
     }
 
     return items;
 };
 
-const PokerCards = ({ updateCard, room, playerId }) => {
+const PokerCards = () => {
+    const { room, playerId } = useContext(RoomContext);
     const [cards, setCards] = useState([]);
     const [isAdmin] = useState(room.user_id === playerId.split('_')[0]);
     const [currentTechnique, setCurrentTechnique] = useState('');
+    const defaultTechnique = 'PLANNING_POKER';
 
-    const handleChange = (event, roomId) => {
-        const technique = event.target.value;
-        const docRef = Firestore().collection('rooms').doc(roomId);
+    const handleChange = async (event) => {
+        try {
+            const data = {
+                technique: event.target.value,
+            };
 
-        docRef.update({
-            technique: technique,
-        });
+            await useRoom.update(room.id, data);
+        } catch (error) {
+            //Error handler popup msg
+        }
+    };
+
+    const updateCard = async (value) => {
+        try {
+            const data = {};
+            const currentPlayerCard = `players.${playerId}.card`;
+
+            data[currentPlayerCard] = value;
+            await useRoom.update(room.id, data);
+        } catch (error) {
+            //Error handler popup msg
+        }
     };
 
     useEffect(() => {
-        setCurrentTechnique(room.technique || 'PLANNING_POKER');
-        setCards(getTechnique(room.technique));
+        setCurrentTechnique(room.technique || defaultTechnique);
+        setCards(getTechnique(room.technique || defaultTechnique));
     }, [room.technique]);
 
     return (
@@ -154,8 +101,8 @@ const PokerCards = ({ updateCard, room, playerId }) => {
             {isAdmin && (
                 <SelectBox>
                     <Select
-                        value={room.technique || 'PLANNING_POKER'}
-                        onChange={(event) => handleChange(event, room.id)}
+                        value={currentTechnique}
+                        onChange={(event) => handleChange(event)}
                     >
                         <option value="PLANNING_POKER">Planning Poker</option>
                         <option value="FIBONACCI">Fibonacci</option>
@@ -165,12 +112,6 @@ const PokerCards = ({ updateCard, room, playerId }) => {
             )}
         </>
     );
-};
-
-PokerCards.propTypes = {
-    updateCard: PropTypes.func.isRequired,
-    room: PropTypes.object.isRequired,
-    playerId: PropTypes.string.isRequired,
 };
 
 export default PokerCards;

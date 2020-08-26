@@ -1,34 +1,28 @@
 import React, { createContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-
-import { Auth } from '../firebase';
-import { Loading } from '../styles/components';
+import useAuth from '../../../services/useAuth';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [loggedUser, setLoggedUser] = useState(null);
-    const [isPending, setPending] = useState(true);
+    const [isAuthRequestPeding, setIsAuthRequestPeding] = useState(true);
 
     useEffect(() => {
         let unmounted = false;
 
-        Auth.onAuthStateChanged((user) => {
+        useAuth.onAuthStateChanged((user) => {
             if (!unmounted) {
                 setLoggedUser(user);
-                setPending(false);
+                setIsAuthRequestPeding(false);
             }
         });
 
         return () => (unmounted = true);
     }, []);
 
-    if (isPending) {
-        return <Loading isPageLoading />;
-    }
-
     return (
-        <AuthContext.Provider value={{ loggedUser }}>
+        <AuthContext.Provider value={{ loggedUser, isAuthRequestPeding }}>
             {children}
         </AuthContext.Provider>
     );
