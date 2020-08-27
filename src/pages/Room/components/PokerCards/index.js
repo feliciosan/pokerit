@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import useRoom from '../../../../services/useRoom';
+import RoomService from '../../../../services/Room';
 import { Select } from '../../../../global/styles/components';
 import { IoMdInfinite } from 'react-icons/io';
 import { GiCoffeeCup } from 'react-icons/gi';
@@ -41,7 +41,7 @@ const PokerCards = () => {
                 technique: event.target.value,
             };
 
-            await useRoom.update(room.id, data);
+            await RoomService.update(room.id, data);
         } catch (error) {
             //Error handler popup msg
         }
@@ -53,7 +53,7 @@ const PokerCards = () => {
             const currentPlayerCard = `players.${playerId}.card`;
 
             data[currentPlayerCard] = value;
-            await useRoom.update(room.id, data);
+            await RoomService.update(room.id, data);
         } catch (error) {
             //Error handler popup msg
         }

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import useRoom from '../../services/useRoom';
+import RoomService from '../../services/Room';
 import { useParams } from 'react-router-dom';
 
 export const RoomContext = createContext();
@@ -27,15 +27,24 @@ export const RoomProvider = ({ children }) => {
     const [playerId, setPlayerId] = useState(getLocalStorageUserKey(id));
     const [room, setRoom] = useState({ players: {} });
     const [roomExists, setRoomExists] = useState(true);
+    const [isOwner, setIsOwner] = useState(false);
 
     useEffect(() => {
         let unmounted = false;
 
-        useRoom.onSnapshot(id, (doc) => {
+        RoomService.onSnapshot(id, (doc) => {
             if (!unmounted) {
                 if (doc.exists) {
                     setRoom({ id: doc.id, ...doc.data() });
                     setIsPageLoading(false);
+
+                    if (playerId) {
+                        const currentPlayerId = playerId.split('_')[0];
+                        const currentRoomCreatorId = doc.data().user_id;
+
+                        setIsOwner(currentPlayerId === currentRoomCreatorId);
+                    }
+
                     return;
                 }
 
@@ -45,7 +54,7 @@ export const RoomProvider = ({ children }) => {
         });
 
         return () => (unmounted = true);
-    }, [id]);
+    }, [id, playerId]);
 
     return (
         <RoomContext.Provider
@@ -55,6 +64,7 @@ export const RoomProvider = ({ children }) => {
                 playerId,
                 isPageLoading,
                 roomExists,
+                isOwner,
                 setPlayerId,
                 setLocalStoragePlayerKey,
             }}

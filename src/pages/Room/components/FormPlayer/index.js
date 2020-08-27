@@ -8,7 +8,7 @@ import {
     FormGroup,
     Loading,
 } from '../../../../global/styles/components';
-import useRoom from '../../../../services/useRoom';
+import RoomService from '../../../../services/Room';
 import { RoomContext } from '../../context';
 import { FormJoinRoom } from './styles';
 import { FormInputError } from '../../../../utils/FormInputError/';
@@ -50,7 +50,7 @@ const FormPlayer = () => {
                 });
 
                 setFormIsLoading(true);
-                await useRoom.update(id, player);
+                await RoomService.update(id, player);
 
                 setLocalStoragePlayerKey(newPlayerId, id);
                 setFormIsLoading(false);

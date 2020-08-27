@@ -14,7 +14,7 @@ import {
 } from '../../global/styles/components';
 import { FormInputError } from '../../utils/FormInputError/';
 import schema from './schemaValidator';
-import useAuth from '../../services/useAuth';
+import AuthService from '../../services/Auth';
 
 const RecoverPassword = () => {
     const { loggedUser } = useContext(AuthContext);
@@ -31,7 +31,7 @@ const RecoverPassword = () => {
                 const { email } = values;
 
                 setIsLoading(true);
-                await useAuth.sendPasswordResetEmail(email);
+                await AuthService.sendPasswordResetEmail(email);
 
                 setIsLoading(false);
                 setSuccess({

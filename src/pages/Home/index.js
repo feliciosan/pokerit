@@ -23,7 +23,7 @@ import {
     RoomItemText,
     RemoveItem,
 } from './styles';
-import useRoom from '../../services/useRoom';
+import RoomService from '../../services/Room';
 import schema from './schemaValidator';
 
 const Home = () => {
@@ -36,7 +36,7 @@ const Home = () => {
 
         (async () => {
             setIsLoading(true);
-            const data = await useRoom.listAll(loggedUser.uid);
+            const data = await RoomService.listAll(loggedUser.uid);
 
             if (!unmounted) {
                 setRooms(data);
@@ -51,8 +51,8 @@ const Home = () => {
         event.preventDefault();
         setIsLoading(true);
 
-        await useRoom.remove(id);
-        const data = await useRoom.listAll(loggedUser.uid);
+        await RoomService.remove(id);
+        const data = await RoomService.listAll(loggedUser.uid);
 
         setRooms(data);
         setIsLoading(false);
@@ -74,8 +74,8 @@ const Home = () => {
                     players: {},
                 };
 
-                await useRoom.create(newRoom);
-                const data = await useRoom.listAll(loggedUser.uid);
+                await RoomService.create(newRoom);
+                const data = await RoomService.listAll(loggedUser.uid);
 
                 setRooms(data);
                 setIsLoading(false);

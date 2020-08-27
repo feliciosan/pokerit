@@ -3,8 +3,7 @@ import PokerCards from './components/PokerCards/';
 import PokerPlayers from './components/PokerPlayers/';
 import FormPlayer from './components/FormPlayer/';
 import NotFound from '../NotFound/';
-import useRoom from '../../services/useRoom';
-import { AuthContext } from '../../global/contexts/Auth';
+import RoomService from '../../services/Room';
 import { RoomProvider, RoomContext } from './context';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { AiOutlineCheck } from 'react-icons/ai';
@@ -27,9 +26,8 @@ import {
 } from './styles';
 
 const RoomContexted = () => {
-    const { loggedUser } = useContext(AuthContext);
     const [copied, setCopied] = useState(false);
-    const { playerId, room, roomExists, isPageLoading } = useContext(
+    const { playerId, room, roomExists, isPageLoading, isOwner } = useContext(
         RoomContext
     );
 
@@ -41,7 +39,7 @@ const RoomContexted = () => {
 
             data[currentPlayerStatus] = status;
 
-            await useRoom.update(room.id, data);
+            await RoomService.update(room.id, data);
         } catch (error) {
             //Error handler popup msg
         }
@@ -58,7 +56,7 @@ const RoomContexted = () => {
 
             data.players = playersToUpdate;
 
-            await useRoom.update(room.id, data);
+            await RoomService.update(room.id, data);
         } catch (error) {
             //Error handler popup msg
         }
@@ -68,7 +66,7 @@ const RoomContexted = () => {
         try {
             const data = { show_result: show };
 
-            await useRoom.update(room.id, data);
+            await RoomService.update(room.id, data);
         } catch (error) {
             //Error handler popup msg
         }
@@ -88,40 +86,34 @@ const RoomContexted = () => {
                         <div>
                             <PageTitle>{room.name}</PageTitle>
                         </div>
-                        {playerId &&
-                            loggedUser &&
-                            loggedUser.uid === room.user_id && (
-                                <PageHeaderActions>
-                                    <CopyToClipboard
-                                        text={window.location.href}
-                                        onCopy={() => setCopied(true)}
+                        {isOwner && (
+                            <PageHeaderActions>
+                                <CopyToClipboard
+                                    text={window.location.href}
+                                    onCopy={() => setCopied(true)}
+                                >
+                                    <IconButton
+                                        title="Copy room link!"
+                                        copied={copied}
                                     >
-                                        <IconButton
-                                            title="Copy room link!"
-                                            copied={copied}
-                                        >
-                                            <AiFillCopy />
-                                        </IconButton>
-                                    </CopyToClipboard>
-                                    <Button
-                                        onClick={() =>
-                                            showAllCards(!room.show_result)
-                                        }
-                                        color={
-                                            room.show_result
-                                                ? 'yellow'
-                                                : 'purple'
-                                        }
-                                    >
-                                        {!room.show_result
-                                            ? 'Show All'
-                                            : 'Hide'}
-                                    </Button>
-                                    <Button onClick={resetCards} color="purple">
-                                        Reset
-                                    </Button>
-                                </PageHeaderActions>
-                            )}
+                                        <AiFillCopy />
+                                    </IconButton>
+                                </CopyToClipboard>
+                                <Button
+                                    onClick={() =>
+                                        showAllCards(!room.show_result)
+                                    }
+                                    color={
+                                        room.show_result ? 'yellow' : 'purple'
+                                    }
+                                >
+                                    {!room.show_result ? 'Show All' : 'Hide'}
+                                </Button>
+                                <Button onClick={resetCards} color="purple">
+                                    Reset
+                                </Button>
+                            </PageHeaderActions>
+                        )}
                     </PageHeader>
                     {!playerId ? (
                         <FormPlayer />

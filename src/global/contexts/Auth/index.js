@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import useAuth from '../../../services/useAuth';
+import AuthService from '../../../services/Auth';
 
 export const AuthContext = createContext();
 
@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         let unmounted = false;
 
-        useAuth.onAuthStateChanged((user) => {
+        AuthService.onAuthStateChanged((user) => {
             if (!unmounted) {
                 setLoggedUser(user);
                 setIsAuthRequestPeding(false);

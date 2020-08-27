@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { IoMdInfinite } from 'react-icons/io';
 import { GiCoffeeCup } from 'react-icons/gi';
 import { BsQuestion } from 'react-icons/bs';
 import { Button } from '../../../../global/styles/components';
 import { RoomContext } from './../../context';
-import useRoom from '../../../../services/useRoom';
+import RoomService from '../../../../services/Room';
 import {
     List,
     ListItem,
@@ -31,8 +31,7 @@ const getParsedContent = (card) => {
 };
 
 const PokerPlayers = () => {
-    const { id, playerId, room } = useContext(RoomContext);
-    const [isOwner] = useState(room.user_id === playerId.split('_')[0]);
+    const { id, playerId, room, isOwner } = useContext(RoomContext);
 
     const getResult = (listPlayerId) => {
         return room.show_result || playerId === listPlayerId
@@ -47,7 +46,7 @@ const PokerPlayers = () => {
             const data = {};
 
             data[currentPlayerStatus] = status;
-            await useRoom.update(id, data);
+            await RoomService.update(id, data);
         } catch (error) {
             //Error handler popup msg
         }
@@ -77,7 +76,6 @@ const PokerPlayers = () => {
                                     </Button>
                                 </DisableUserButton>
                             )}
-
                             {room.players[listPlayerId].card === null ? (
                                 <ItemResult disabled>-</ItemResult>
                             ) : (

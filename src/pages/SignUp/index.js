@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
+import AuthService from '../../services/Auth';
 import { useFormik } from 'formik';
 import { Redirect, Link } from 'react-router-dom';
 import { AuthContext } from '../../global/contexts/Auth';
-import useAuth from '../../services/useAuth';
 import {
     Input,
     Button,
@@ -30,7 +30,10 @@ const SignUp = () => {
                 const { email, password } = values;
 
                 setIsLoading(true);
-                await useAuth.createUserWithEmailAndPassword(email, password);
+                await AuthService.createUserWithEmailAndPassword(
+                    email,
+                    password
+                );
             } catch (error) {
                 setError(error);
                 setIsLoading(false);

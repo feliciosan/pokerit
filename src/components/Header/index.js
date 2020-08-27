@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { AuthContext } from '../../global/contexts/Auth';
 import { Button, Container } from '../../global/styles/components';
 import { HeaderBar, HeaderContent, HeaderLogo, HeaderMenu } from './styles';
-import useAuth from '../../services/useAuth';
+import AuthService from '../../services/Auth';
 
 const Header = () => {
     const history = useHistory();
@@ -11,7 +11,7 @@ const Header = () => {
 
     const handleSignOut = async () => {
         try {
-            await useAuth.signOut();
+            await AuthService.signOut();
 
             localStorage.removeItem('user_id');
             history.push('/signin');

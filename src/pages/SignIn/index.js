@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { useFormik } from 'formik';
 import { AuthContext } from '../../global/contexts/Auth';
 import { Redirect, Link } from 'react-router-dom';
-import useAuth from '../../services/useAuth';
+import AuthService from '../../services/Auth';
 import {
     Input,
     Button,
@@ -31,7 +31,7 @@ const SignIn = () => {
                 const { email, password } = values;
 
                 setIsLoading(true);
-                await useAuth.signInWithEmailAndPassword(email, password);
+                await AuthService.signInWithEmailAndPassword(email, password);
             } catch (error) {
                 setError(error);
                 setIsLoading(false);
