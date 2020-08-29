@@ -15,12 +15,8 @@ const AppContexted = () => {
             ) : (
                 <>
                     <GlobalStyle />
-                    <AuthProvider>
-                        <>
-                            <Header />
-                            <AppRoutes />
-                        </>
-                    </AuthProvider>
+                    <Header />
+                    <AppRoutes />
                 </>
             )}
         </>
