@@ -1,4 +1,4 @@
-import { Firestore } from '../firebase';
+import { Firestore } from '../firebase/firebase';
 
 const collection = Firestore().collection('rooms');
 

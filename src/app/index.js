@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import AppRoutes from './Routes';
-import Header from '../components/Header/';
-import GlobalStyle from '../global/styles/';
-import { AuthProvider, AuthContext } from '../global/contexts/Auth';
-import { Loading } from '../global/styles/components';
+import AppRoutes from '../routes/routes';
+import Header from '../components/header/header';
+import GlobalStyle from '../styles/global/global';
+import { AuthProvider, AuthContext } from '../contexts/auth/auth';
+import { Loading } from '../styles/default/default';
 
 const AppContexted = () => {
     const { isAuthRequestPeding } = useContext(AuthContext);
