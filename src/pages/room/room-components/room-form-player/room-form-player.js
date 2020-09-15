@@ -12,7 +12,7 @@ import {
     Loading,
 } from '../../../../styles/default/default';
 import { FormJoinRoom } from './room-form-player-styles';
-import { RoomContext } from '../../../../contexts/room-context/room-context';
+import { RoomContext } from '../../../../contexts/room/room';
 import { FormInputError } from '../../../../components/input-form-error/input-form-error';
 
 const generatePlayer = (player) => {

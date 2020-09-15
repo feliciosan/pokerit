@@ -11,7 +11,7 @@ import {
     CardButton,
     SelectBox,
 } from './room-poker-cards-styles';
-import { RoomContext } from '../../../../contexts/room-context/room-context';
+import { RoomContext } from '../../../../contexts/room/room';
 
 const getTechnique = (action) => {
     const technique = {

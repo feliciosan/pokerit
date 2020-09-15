@@ -5,10 +5,7 @@ import FormPlayer from './room-components/room-form-player/room-form-player';
 import NotFound from '../not-found/not-found';
 import RoomService from '../../services/room';
 
-import {
-    RoomProvider,
-    RoomContext,
-} from '../../contexts/room-context/room-context';
+import { RoomProvider, RoomContext } from '../../contexts/room/room';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { AiOutlineCheck } from 'react-icons/ai';
 import { AiFillCopy } from 'react-icons/ai';

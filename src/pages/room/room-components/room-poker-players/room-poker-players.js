@@ -5,7 +5,7 @@ import { IoMdInfinite } from 'react-icons/io';
 import { GiCoffeeCup } from 'react-icons/gi';
 import { BsQuestion } from 'react-icons/bs';
 import { Button } from '../../../../styles/default/default';
-import { RoomContext } from '../../../../contexts/room-context/room-context';
+import { RoomContext } from '../../../../contexts/room/room';
 import {
     List,
     ListItem,
