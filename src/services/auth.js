@@ -13,7 +13,9 @@ const createUserWithEmailAndPassword = (email, password) => {
 };
 
 const sendPasswordResetEmail = (email) => {
-    return Auth.sendPasswordResetEmail(email);
+    return Auth.sendPasswordResetEmail(email, {
+        url: process.env.REACT_APP_RECOVER_PASSWORD_REDIRECT,
+    });
 };
 
 const onAuthStateChanged = (observerCallback) => {

@@ -15,7 +15,7 @@ import {
     FormAlert,
     Container,
     Loading,
-} from '../../styles/default/default';
+} from '../../styles/default/default.style';
 import { FormInputError } from '../../components/input-form-error/input-form-error';
 
 const SignIn = () => {

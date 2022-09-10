@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Loading } from '../../styles/default/default';
+import { Loading } from '../../styles/default/default.style';
 
 export const PageHeaderForm = styled.form`
     display: flex;

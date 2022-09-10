@@ -3,7 +3,7 @@ import AuthService from '../../services/auth';
 
 import { Link, useHistory } from 'react-router-dom';
 import { AuthContext } from '../../contexts/auth/auth';
-import { Button, Container } from '../../styles/default/default';
+import { Button, Container } from '../../styles/default/default.style';
 import {
     HeaderBar,
     HeaderContent,

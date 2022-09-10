@@ -4,7 +4,7 @@ import RoomService from '../../../../services/room';
 import { IoMdInfinite } from 'react-icons/io';
 import { GiCoffeeCup } from 'react-icons/gi';
 import { BsQuestion } from 'react-icons/bs';
-import { Button } from '../../../../styles/default/default';
+import { Button } from '../../../../styles/default/default.style';
 import { RoomContext } from '../../../../contexts/room/room';
 import {
     List,
@@ -13,7 +13,7 @@ import {
     InfoItem,
     DisableUserButton,
     ItemResult,
-} from './room-poker-players-styles';
+} from './room-poker-players.styles';
 
 const getParsedContent = (card) => {
     if (card === 'INFINITY') {

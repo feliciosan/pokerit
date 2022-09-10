@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Loading } from '../../../../styles/default/default';
+import { Loading } from '../../../../styles/default/default.style';
 
 export const FormJoinRoom = styled.form`
     max-width: 450px;

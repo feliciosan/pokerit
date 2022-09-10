@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Select } from '../../../../styles/default/default';
+import { Select } from '../../../../styles/default/default.style';
 
 export const CardList = styled.div`
     display: flex;

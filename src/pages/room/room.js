@@ -15,7 +15,7 @@ import {
     PageHeader,
     PageTitle,
     Loading,
-} from '../../styles/default/default';
+} from '../../styles/default/default.style';
 import {
     PageHeaderActions,
     IconButton,
@@ -24,7 +24,7 @@ import {
     PokerList,
     ActiveButton,
     ActiveButtonIcon,
-} from './room-styles';
+} from './room.styles';
 
 const RoomContexted = () => {
     const [copied, setCopied] = useState(false);

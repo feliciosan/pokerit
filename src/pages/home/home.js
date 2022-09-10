@@ -14,7 +14,7 @@ import {
     PageHeader,
     PageTitle,
     Loading,
-} from '../../styles/default/default';
+} from '../../styles/default/default.style';
 import {
     PageHeaderForm,
     PageContent,
@@ -25,7 +25,7 @@ import {
     RoomItemContent,
     RoomItemText,
     RemoveItem,
-} from './home-styles';
+} from './home.styles';
 
 const Home = () => {
     const { loggedUser } = useContext(AuthContext);
@@ -103,14 +103,14 @@ const Home = () => {
                         onChange={createRoom.handleChange}
                         onBlur={createRoom.handleBlur}
                         value={createRoom.values.name}
-                        placeholder="New room"
+                        placeholder="Room name"
                     />
                     <Button
                         type="submit"
                         color="yellow"
                         disabled={!createRoom.isValid || isLoading}
                     >
-                        Add
+                        Create
                     </Button>
                 </PageHeaderForm>
             </PageHeader>

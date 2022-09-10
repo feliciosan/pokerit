@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import RoomService from '../../../../services/room';
 
-import { Select } from '../../../../styles/default/default';
+import { Select } from '../../../../styles/default/default.style';
 import { IoMdInfinite } from 'react-icons/io';
 import { GiCoffeeCup } from 'react-icons/gi';
 import { BsQuestion } from 'react-icons/bs';
@@ -10,20 +10,20 @@ import {
     CardItem,
     CardButton,
     SelectBox,
-} from './room-poker-cards-styles';
+} from './room-poker-cards.styles';
 import { RoomContext } from '../../../../contexts/room/room';
 
 const getTechnique = (action) => {
     const technique = {
         PLANNING_POKER: [0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100],
         FIBONACCI: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144],
-        SEQUENTIAL: getSequentialRange(),
+        SEQUENTIAL: getSequentialRange(1, 12, 1),
     };
 
     return technique[action];
 };
 
-const getSequentialRange = (start = 1, end = 20, interval = 1) => {
+const getSequentialRange = (start = 1, end = 10, interval = 1) => {
     const items = [];
 
     while (start <= end) {

@@ -10,8 +10,8 @@ import {
     FormTitle,
     FormGroup,
     Loading,
-} from '../../../../styles/default/default';
-import { FormJoinRoom } from './room-form-player-styles';
+} from '../../../../styles/default/default.style';
+import { FormJoinRoom } from './room-form-player.styles';
 import { RoomContext } from '../../../../contexts/room/room';
 import { FormInputError } from '../../../../components/input-form-error/input-form-error';
 

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button } from '../../styles/default/default';
+import { Button } from '../../styles/default/default.style';
 
 export const PageHeaderActions = styled.div`
     display: flex;
